@@ -134,7 +134,7 @@ const SandSimulation = () => {
     clearCanvas(ctx)
 
     // Draw grid
-    drawGrid(ctx, "#d1d5dc", cellSize, canvasSize.width, canvasSize.height)
+    //drawGrid(ctx, "#d1d5dc", cellSize, canvasSize.width, canvasSize.height)
 
     // Draw all cells
     cellsRef.current.forEach((cell) => {
@@ -399,13 +399,13 @@ const SandSimulation = () => {
           <ToggleGroupItem value="10">
             <PlayIcon />
           </ToggleGroupItem>
-          <ToggleGroupItem value="25">
+          <ToggleGroupItem value="30">
             <div className="flex">
               <PlayIcon />
               <PlayIcon />
             </div>
           </ToggleGroupItem>
-          <ToggleGroupItem value="60">
+          <ToggleGroupItem value="120">
             <div className="flex">
               <PlayIcon />
               <PlayIcon />
@@ -418,13 +418,13 @@ const SandSimulation = () => {
           defaultValue="15"
           onValueChange={(value) => handleCellSizeChange(Number(value))}
         >
-          <ToggleGroupItem value="10">
+          <ToggleGroupItem value="5">
             <SquareIcon />
           </ToggleGroupItem>
-          <ToggleGroupItem value="15">
+          <ToggleGroupItem value="10">
             <SquareIcon className="size-5" />
           </ToggleGroupItem>
-          <ToggleGroupItem value="50">
+          <ToggleGroupItem value="20">
             <SquareIcon className="size-6" />
           </ToggleGroupItem>
         </ToggleGroup>
