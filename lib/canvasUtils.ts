@@ -23,9 +23,13 @@ export const drawLine = (
   ctx.stroke()
 }
 
-export const drawCircle = (ctx: CanvasRenderingContext2D): void => {
+export const drawCircle = (
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number
+): void => {
   ctx.beginPath()
   ctx.lineWidth = 2
-  ctx.arc(95, 50, 40, 0, 2 * Math.PI)
+  ctx.arc(x, y, 40, 0, 2 * Math.PI)
   ctx.stroke()
 }

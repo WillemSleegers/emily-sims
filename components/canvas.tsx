@@ -1,5 +1,7 @@
 "use client"
 
+import { drawGrid } from "@/lib/canvasGridUtils"
+import { drawCircle } from "@/lib/canvasUtils"
 import { useEffect, useRef } from "react"
 
 const Canvas = () => {
@@ -27,6 +29,9 @@ const Canvas = () => {
 
           canvas.style.width = `${width}px`
           canvas.style.height = `${height}px`
+
+          drawGrid(ctx, "black", 20, width, height)
+          drawCircle(ctx, width / 2, height / 2)
         }
       }
     }
@@ -35,7 +40,11 @@ const Canvas = () => {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
-  return <canvas ref={canvasRef} className="border-2 rounded border-black" />
+  return (
+    <div className="h-full">
+      <canvas ref={canvasRef} className="border-2 rounded border-black" />
+    </div>
+  )
 }
 
 export default Canvas

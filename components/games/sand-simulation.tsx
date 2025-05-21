@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, MouseEvent, TouchEvent } from "react"
 import { clearCanvas } from "@/lib/canvasUtils"
 
 import { Cell } from "@/lib/types"
-import { drawGrid, drawCell } from "@/lib/canvasGridUtils"
+import { drawCell } from "@/lib/canvasGridUtils"
 import { Button } from "@/components/ui/button"
 import { CircleXIcon, PlayIcon, SquareIcon } from "lucide-react"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
@@ -324,9 +324,9 @@ const SandSimulation = () => {
 
       // Update the current color based on timestamp
       const now = timestamp / 1000
-      const hue = (now * 10) % 360 // 0-360 degrees of color wheel
-      const saturation = 75 // 0-100%
-      const lightness = 60 // 0-100%
+      const hue = (now * 20) % 360 // 0-360 degrees of color wheel
+      const saturation = 100 // 0-100%
+      const lightness = 50 // 0-100%
 
       cellColor.current = hslToHex(hue, saturation, lightness)
 
@@ -393,7 +393,7 @@ const SandSimulation = () => {
         </Button>
         <ToggleGroup
           type="single"
-          defaultValue="10"
+          defaultValue="30"
           onValueChange={(value) => setFps(Number(value))}
         >
           <ToggleGroupItem value="10">
@@ -415,7 +415,7 @@ const SandSimulation = () => {
         </ToggleGroup>
         <ToggleGroup
           type="single"
-          defaultValue="15"
+          defaultValue="10"
           onValueChange={(value) => handleCellSizeChange(Number(value))}
         >
           <ToggleGroupItem value="5">
@@ -435,7 +435,7 @@ const SandSimulation = () => {
       >
         <canvas
           ref={canvasRef}
-          className="border-2 rounded border-gray-300"
+          className="border-2 rounded border-gray-300 bg-white"
           width={canvasSize.width}
           height={canvasSize.height}
           onMouseDown={handleMouseDown}
