@@ -61,38 +61,72 @@ const SandSimulation = () => {
   useEffect(() => {
     const handleResize = () => {
       const canvas = canvasRef.current
+      if (!canvas) return
 
-      if (canvas) {
-        const parent = canvas.parentElement
-        if (parent) {
-          // Get the DPR and size of the canvas
-          const dpr = window.devicePixelRatio
+      const parent = canvas.parentElement
+      if (!parent) return
 
-          const width = Math.floor(parent.clientWidth / cellSize) * cellSize
-          const height =
-            Math.floor(parent.clientHeight / cellSize) * cellSize - cellSize // Figure out why subtracting by something fixes the height resizing
+      // Force layout recalculation to get accurate dimensions
+      // This helps ensure we get updated dimensions when shrinking
+      parent.getBoundingClientRect()
 
-          console.log(width * dpr)
-          console.log(height * dpr)
+      // Get the DPR
+      const dpr = window.devicePixelRatio
 
-          // Set the "actual" size of the canvas
-          canvas.width = width * dpr
-          canvas.height = height * dpr
+      // Get current dimensions of the parent
+      const availableWidth = parent.clientWidth
+      const availableHeight = parent.clientHeight
 
-          const ctx = canvas.getContext("2d", { alpha: false })!
-          ctx.scale(dpr, dpr)
+      // Calculate how many complete cells fit in each dimension
+      const cellCountX = Math.max(1, Math.floor(availableWidth / cellSize))
+      const cellCountY = Math.max(1, Math.floor(availableHeight / cellSize))
 
-          canvas.style.width = `${width}px`
-          canvas.style.height = `${height}px`
+      // Calculate final dimensions based on whole cells
+      const width = cellCountX * cellSize
+      const height = cellCountY * cellSize
 
-          setCanvasSize({ width, height })
-          needsRedraw.current = true
-        }
+      // Always update canvas dimensions
+      canvas.width = width * dpr
+      canvas.height = height * dpr
+
+      // Update CSS dimensions
+      canvas.style.width = `${width}px`
+      canvas.style.height = `${height}px`
+
+      // Reset and apply DPR scaling to context
+      const ctx = canvas.getContext("2d", { alpha: false })
+      if (ctx) {
+        // Clear any previous transforms
+        ctx.setTransform(1, 0, 0, 1, 0, 0)
+        ctx.scale(dpr, dpr)
       }
+
+      // Important: Always update state to trigger rerender
+      setCanvasSize({ width, height })
+      needsRedraw.current = true
     }
+
+    // Initial resize
     handleResize()
+
+    // Create a resize observer instead of using window.resize
+    // This is more reliable for detecting container size changes
+    const resizeObserver = new ResizeObserver(() => {
+      handleResize()
+    })
+
+    const parent = canvasRef.current?.parentElement
+    if (parent) {
+      resizeObserver.observe(parent)
+    }
+
+    // Also keep the window resize listener as a fallback
     window.addEventListener("resize", handleResize)
-    return () => window.removeEventListener("resize", handleResize)
+
+    return () => {
+      resizeObserver.disconnect()
+      window.removeEventListener("resize", handleResize)
+    }
   }, [cellSize])
 
   // Draw all cells
@@ -395,7 +429,10 @@ const SandSimulation = () => {
           </ToggleGroupItem>
         </ToggleGroup>
       </div>
-      <div className="grow flex justify-center">
+      <div
+        className="grow flex justify-center"
+        style={{ minHeight: 0, minWidth: 0 }}
+      >
         <canvas
           ref={canvasRef}
           className="border-2 rounded border-gray-300"
