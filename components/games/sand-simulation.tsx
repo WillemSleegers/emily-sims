@@ -215,9 +215,7 @@ const SandSimulation = () => {
     isPouring.current = false
   }
 
-  const handleTouchStart = (
-    event: React.TouchEvent<HTMLCanvasElement>
-  ): void => {
+  const handleTouchStart = (event: TouchEvent<HTMLCanvasElement>): void => {
     event.preventDefault() // Prevent scrolling/zooming
 
     if (event.touches.length > 0) {
@@ -241,9 +239,7 @@ const SandSimulation = () => {
     }
   }
 
-  const handleTouchMove = (
-    event: React.TouchEvent<HTMLCanvasElement>
-  ): void => {
+  const handleTouchMove = (event: TouchEvent<HTMLCanvasElement>): void => {
     event.preventDefault() // Prevent scrolling/zooming
 
     if (event.touches.length > 0 && isPouring.current) {
