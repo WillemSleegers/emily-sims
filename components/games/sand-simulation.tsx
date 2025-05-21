@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState, MouseEvent } from "react"
+import { useEffect, useRef, useState, MouseEvent, TouchEvent } from "react"
 import { clearCanvas } from "@/lib/canvasUtils"
 
 import { Cell } from "@/lib/types"
@@ -189,9 +189,6 @@ const SandSimulation = () => {
     const x = Math.floor(event.nativeEvent.offsetX / cellSize) + 1
     const y = Math.floor(event.nativeEvent.offsetY / cellSize) + 1
 
-    console.log(x)
-    console.log(y)
-
     // Update mouse position
     mousePosition.current = { x, y }
 
@@ -215,6 +212,56 @@ const SandSimulation = () => {
   }
 
   const handleMouseLeave = (): void => {
+    isPouring.current = false
+  }
+
+  const handleTouchStart = (
+    event: React.TouchEvent<HTMLCanvasElement>
+  ): void => {
+    event.preventDefault() // Prevent scrolling/zooming
+
+    if (event.touches.length > 0) {
+      const touch = event.touches[0]
+      const rect = canvasRef.current?.getBoundingClientRect()
+
+      if (rect) {
+        // Convert touch position to grid coordinates
+        const x = Math.floor((touch.clientX - rect.left) / cellSize) + 1
+        const y = Math.floor((touch.clientY - rect.top) / cellSize) + 1
+
+        // Update mouse position
+        mousePosition.current = { x, y }
+
+        // Start pouring
+        isPouring.current = true
+
+        // Force one immediate sand particle
+        pourSand()
+      }
+    }
+  }
+
+  const handleTouchMove = (
+    event: React.TouchEvent<HTMLCanvasElement>
+  ): void => {
+    event.preventDefault() // Prevent scrolling/zooming
+
+    if (event.touches.length > 0 && isPouring.current) {
+      const touch = event.touches[0]
+      const rect = canvasRef.current?.getBoundingClientRect()
+
+      if (rect) {
+        // Convert touch position to grid coordinates
+        const x = Math.floor((touch.clientX - rect.left) / cellSize) + 1
+        const y = Math.floor((touch.clientY - rect.top) / cellSize) + 1
+
+        // Update mouse position
+        mousePosition.current = { x, y }
+      }
+    }
+  }
+
+  const handleTouchEnd = (): void => {
     isPouring.current = false
   }
 
@@ -362,6 +409,10 @@ const SandSimulation = () => {
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseLeave}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onTouchCancel={handleTouchEnd}
         />
       </div>
     </div>
