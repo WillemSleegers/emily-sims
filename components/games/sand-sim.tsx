@@ -129,7 +129,7 @@ const SandSim = () => {
     if (isPouring.current) {
       const now = timestamp / 1000
       const hue = (now * 30) % 360
-      const saturation = 85 + Math.sin(now * 0.5) * 15 // Varying saturation
+      const saturation = 50 + Math.sin(now * 0.5) * 15 // Varying saturation
       const lightness = 55 + Math.sin(now * 0.3) * 10 // Varying brightness
       currentCellColor.current = hslToHex(hue, saturation, lightness)
     }
@@ -300,9 +300,11 @@ const SandSim = () => {
 
   return (
     <div className="h-dvh p-2 sm:p-3 md:p-4 flex flex-col gap-2">
-      <div className="flex gap-x-4 justify-between">
-        <h1 className="font-semibold text-2xl">Emily Sand Sim</h1>
-        <div className="flex gap-x-4">
+      <div className="flex flex-wrap gap-x-4 gap-y-2 justify-between">
+        <h1 className="font-semibold text-2xl whitespace-nowrap">
+          Emily Sand Sim
+        </h1>
+        <div className="flex flex-wrap gap-x-4 gap-y-2">
           <Button
             variant="outline"
             size="icon"
