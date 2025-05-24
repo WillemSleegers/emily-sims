@@ -369,7 +369,7 @@ const SandSim = () => {
       <div className="flex-1 min-h-0 flex justify-center items-center">
         <canvas
           ref={canvasRef}
-          className="rounded border border-primary w-full h-full max-w-full max-h-full"
+          className="rounded border border-primary w-full h-full max-w-full max-h-full select-none"
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
