@@ -1,13 +1,7 @@
-import Canvas from "@/components/canvas"
-//import SandSimulation from "@/components/games/sand-simulation"
+import SandSim from "@/components/games/sand-sim"
 
 const Home = () => {
-  return (
-    <div className="h-full p-4">
-      {/* <SandSimulation /> */}
-      <Canvas />
-    </div>
-  )
+  return <SandSim />
 }
 
 export default Home

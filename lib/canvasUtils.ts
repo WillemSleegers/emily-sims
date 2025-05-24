@@ -1,8 +1,15 @@
-export const clearCanvas = (ctx: CanvasRenderingContext2D): void => {
-  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+export const clearCanvas = (
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number
+): void => {
+  ctx.clearRect(0, 0, width, height)
 }
 
-export const draw = (ctx: CanvasRenderingContext2D, dt: number) => {
+export const drawPulsingCircle = (
+  ctx: CanvasRenderingContext2D,
+  dt: number
+) => {
   ctx.fillStyle = "red"
   ctx.beginPath()
   ctx.arc(50, 100, 20 * Math.sin(dt * 0.001) ** 2, 0, 2 * Math.PI)
