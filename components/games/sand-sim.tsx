@@ -300,70 +300,74 @@ const SandSim = () => {
 
   return (
     <div className="h-dvh p-2 sm:p-3 md:p-4 flex flex-col gap-2">
-      <div className="flex gap-x-4 justify-center">
+      <div className="flex gap-x-4 justify-between">
         <h1 className="font-semibold text-2xl">Emily Sand Sim</h1>
-        <Button
-          variant="outline"
-          size="icon"
-          className="border-none shadow-none"
-          onClick={clearCells}
-        >
-          <CircleXIcon className="size-6" />
-        </Button>
-        <ToggleGroup
-          type="single"
-          defaultValue={DEFAULT_FPS.toString()}
-          onValueChange={(value) => setFps(Number(value))}
-        >
-          <ToggleGroupItem value="5" className="rounded-md">
-            <PlayIcon />
-          </ToggleGroupItem>
-          <ToggleGroupItem value="10" className="rounded-md">
-            <div className="flex">
-              <PlayIcon />
-              <PlayIcon />
-            </div>
-          </ToggleGroupItem>
-          <ToggleGroupItem value="60" className="rounded-md">
-            <div className="flex">
-              <PlayIcon />
-              <PlayIcon />
-              <PlayIcon />
-            </div>
-          </ToggleGroupItem>
-        </ToggleGroup>
-        <ToggleGroup
-          type="single"
-          defaultValue={DEFAULT_CELL_SIZE.toString()}
-          onValueChange={(value) => setCellSize(Number(value))}
-        >
-          <ToggleGroupItem
-            value="5"
-            aria-label="Small grid"
-            className="rounded-md"
+        <div className="flex gap-x-4">
+          <Button
+            variant="outline"
+            size="icon"
+            className="border-none shadow-none"
+            onClick={clearCells}
           >
-            <SquareIcon className="scale-75" />
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="10"
-            aria-label="Medium grid"
-            className="rounded-md"
+            <CircleXIcon className="size-6" />
+          </Button>
+          <ToggleGroup
+            type="single"
+            className="flex gap-1"
+            defaultValue={DEFAULT_FPS.toString()}
+            onValueChange={(value) => setFps(Number(value))}
           >
-            <SquareIcon className="scale-100" />
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="25"
-            aria-label="Large grid"
-            className="rounded-md"
+            <ToggleGroupItem value="5" className="rounded-md">
+              <PlayIcon />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="10" className="rounded-md">
+              <div className="flex">
+                <PlayIcon />
+                <PlayIcon />
+              </div>
+            </ToggleGroupItem>
+            <ToggleGroupItem value="60" className="rounded-md">
+              <div className="flex">
+                <PlayIcon />
+                <PlayIcon />
+                <PlayIcon />
+              </div>
+            </ToggleGroupItem>
+          </ToggleGroup>
+          <ToggleGroup
+            type="single"
+            className="flex gap-1"
+            defaultValue={DEFAULT_CELL_SIZE.toString()}
+            onValueChange={(value) => setCellSize(Number(value))}
           >
-            <SquareIcon className="scale-125" />
-          </ToggleGroupItem>
-        </ToggleGroup>
+            <ToggleGroupItem
+              value="5"
+              aria-label="Small grid"
+              className="rounded-md"
+            >
+              <SquareIcon className="scale-75" />
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value="10"
+              aria-label="Medium grid"
+              className="rounded-md"
+            >
+              <SquareIcon className="scale-100" />
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value="25"
+              aria-label="Large grid"
+              className="rounded-md"
+            >
+              <SquareIcon className="scale-125" />
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </div>
       </div>
       <div className="flex-1 min-h-0 flex justify-center items-center">
         <canvas
           ref={canvasRef}
-          className="border border-primary w-full h-full max-w-full max-h-full"
+          className="rounded border border-primary w-full h-full max-w-full max-h-full"
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
