@@ -107,16 +107,6 @@ const SandSim = () => {
       })
       cellsMap.current.set(key, true)
     }
-
-    // Add some randomness for a more natural pour effect
-    // if (Math.random() > 0.5) {
-    //   const offset = Math.random() > 0.5 ? 1 : -1
-    //   addCell(
-    //     mousePosition.current.x + offset,
-    //     mousePosition.current.y,
-    //     currentCellColor.current
-    //   )
-    // }
   }
 
   const clearCells = () => {
