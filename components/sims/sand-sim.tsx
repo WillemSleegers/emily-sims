@@ -13,8 +13,8 @@ import { CircleXIcon, PlayIcon, SquareIcon } from "lucide-react"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Button } from "@/components/ui/button"
 
-import { clearCanvas } from "@/lib/canvasUtils"
-import { drawCell, resizeGrid } from "@/lib/canvasGridUtils"
+import { clearCanvas } from "@/lib/canvas-utils"
+import { drawCell, resizeGrid } from "@/lib/canvas-grid-utils"
 
 import { Cell } from "@/lib/types"
 import { hslToHex } from "@/lib/utils"
