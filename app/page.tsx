@@ -12,6 +12,18 @@ const Home = () => {
           <li>
             <Link href="/rain-sim">Rain Sim</Link>
           </li>
+          <li>
+            <Link href="/flock-sim">Flock Sim</Link>
+          </li>
+          <li>
+            <Link href="/game-of-life">Game of Life</Link>
+          </li>
+          <li>
+            <Link href="/test">Test</Link>
+          </li>
+          <li>
+            <Link href="/random">Random</Link>
+          </li>
         </ul>
       </nav>
     </div>

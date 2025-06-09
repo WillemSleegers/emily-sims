@@ -13,11 +13,11 @@ import { CircleXIcon, PlayIcon, SquareIcon } from "lucide-react"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Button } from "@/components/ui/button"
 
-import { clearCanvas } from "@/lib/canvas-utils"
-import { drawCell, resizeGrid } from "@/lib/canvas-grid-utils"
+import { clearCanvas } from "@/lib/utils-canvas"
+import { drawCell } from "@/lib/utils-canvas-grid"
 
 import { Cell } from "@/lib/types"
-import { hslToHex } from "@/lib/utils"
+import { hslToHex } from "@/lib/utils-colors"
 
 const DEFAULT_CELL_SIZE = 10
 const DEFAULT_FPS = 10
