@@ -3,7 +3,6 @@
 import { useRef, useEffect } from "react"
 
 export type AnimationLoopOptions = {
-  fps?: number
   enabled?: boolean
 }
 
@@ -11,7 +10,7 @@ export const useAnimationLoop = (
   callback: (deltaTime: number) => void,
   options: AnimationLoopOptions = {}
 ) => {
-  const { fps = 60, enabled = true } = options
+  const { enabled = true } = options
 
   const animationId = useRef(0)
   const callbackRef = useRef(callback)
@@ -24,20 +23,27 @@ export const useAnimationLoop = (
   useEffect(() => {
     if (!enabled) return
 
-    const targetInterval = 1000 / fps // Target time between calls
-
     const animate = (timestamp: number) => {
-      if (timestamp - lastCallTime.current >= targetInterval) {
-        const deltaTime = timestamp - lastCallTime.current
-        callbackRef.current(deltaTime)
+      // Handle first frame
+      if (lastCallTime.current === 0) {
         lastCallTime.current = timestamp
+        animationId.current = requestAnimationFrame(animate)
+        return
       }
 
+      // Bounds check deltaTime (clamp between 0-100ms)
+      const deltaTime = Math.max(
+        0,
+        Math.min(timestamp - lastCallTime.current, 100)
+      )
+
+      callbackRef.current(deltaTime)
+      lastCallTime.current = timestamp
       animationId.current = requestAnimationFrame(animate)
     }
 
-    // Initialize
-    lastCallTime.current = performance.now()
+    // Initialize timing and start animation
+    lastCallTime.current = 0
     animationId.current = requestAnimationFrame(animate)
 
     return () => {
@@ -46,7 +52,7 @@ export const useAnimationLoop = (
         animationId.current = 0
       }
     }
-  }, [fps, enabled])
+  }, [enabled])
 
   return {
     stop: () => {

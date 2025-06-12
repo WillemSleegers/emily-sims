@@ -48,7 +48,7 @@ export const useAnimatedGridCanvas = (
       updateCallbackRef.current?.(deltaTime, ctx, gridInfo)
       drawCallbackRef.current?.(ctx, gridInfo)
     },
-    { fps, enabled: canvasReady }
+    { enabled: canvasReady }
   )
 
   return {

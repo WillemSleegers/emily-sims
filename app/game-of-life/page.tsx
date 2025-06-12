@@ -128,7 +128,6 @@ const ResponsiveGameOfLife = () => {
   const {
     canvasRef,
     canvasReady,
-    drawGrid,
     getCellFromPixel,
     getPixelFromCell,
     getGridInfo,
@@ -184,7 +183,7 @@ const ResponsiveGameOfLife = () => {
   return (
     <div className="h-screen p-4 flex flex-col gap-4">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Responsive Conway's Game of Life</h1>
+        <h1 className="text-2xl font-bold">Game of Life</h1>
 
         <div className="flex gap-4 items-center">
           <div className="flex items-center gap-2">

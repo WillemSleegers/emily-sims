@@ -138,39 +138,6 @@ const SandSim = () => {
     })
   }, [cellSize])
 
-  // Handle resizing
-  const handleResize = useCallback(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-
-    const dimensions = resizeGrid(canvas, cellSize)
-    canvasSize.current.width = dimensions.displayWidth
-    canvasSize.current.height = dimensions.displayHeight
-  }, [cellSize])
-
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas?.parentElement) return
-
-    const resizeObserver = new ResizeObserver(() => {
-      handleResize()
-    })
-
-    // Watch the parent container for size changes
-    resizeObserver.observe(canvas.parentElement)
-
-    // Initial size
-    handleResize()
-
-    // Also listen for window resize as backup
-    window.addEventListener("resize", handleResize)
-
-    return () => {
-      resizeObserver.disconnect()
-      window.removeEventListener("resize", handleResize)
-    }
-  }, [handleResize])
-
   // Mouse and touch event handlers
   const handleMouseDown = (event: MouseEvent<HTMLCanvasElement>): void => {
     // Convert mouse position to grid coordinates

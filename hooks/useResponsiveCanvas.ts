@@ -2,14 +2,15 @@
 
 import { useRef, useEffect, useCallback, useState } from "react"
 
-export interface CanvasSize {
+export type CanvasSize = {
   width: number
   height: number
 }
 
-export const useCanvas = () => {
+export const useResponsiveCanvas = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const canvasSize = useRef<CanvasSize>({ width: 0, height: 0 })
+
   const [canvasReady, setCanvasReady] = useState(false)
 
   const handleResize = useCallback(() => {
@@ -35,7 +36,7 @@ export const useCanvas = () => {
 
     canvasSize.current = { width, height }
 
-    if (width > 0 && height > 0) {
+    if (width > 0 && height > 0 && ctx) {
       setCanvasReady(true)
     }
   }, [])
@@ -48,11 +49,8 @@ export const useCanvas = () => {
     resizeObserver.observe(canvas.parentElement)
     handleResize()
 
-    window.addEventListener("resize", handleResize)
-
     return () => {
       resizeObserver.disconnect()
-      window.removeEventListener("resize", handleResize)
     }
   }, [handleResize])
 

@@ -14,20 +14,8 @@ export const createWalker = (x: number, y: number): Walker => {
   }
 }
 
-export const randomStep = (stepSize: number = 5): Vector2D => {
-  return createVector(randomSign() * stepSize, randomSign() * stepSize)
-}
-
-export const updateWalkerPosition = (
-  walker: Walker,
-  velocity: Vector2D,
-  deltaTime: number
-): void => {
-  const dt = deltaTime / 1000 // Convert to seconds
-
-  walker.position.x += velocity.x * dt
-  walker.position.y += velocity.y * dt
-}
+export const generateRandomStep = (stepSize: number = 100): Vector2D =>
+  createVector(randomSign() * stepSize, randomSign() * stepSize)
 
 export const drawWalker = (
   ctx: CanvasRenderingContext2D,
@@ -37,7 +25,6 @@ export const drawWalker = (
 
   ctx.beginPath()
   ctx.arc(walker.position.x, walker.position.y, radius, 0, 2 * Math.PI)
-
   ctx.fillStyle = "white"
   ctx.fill()
 }

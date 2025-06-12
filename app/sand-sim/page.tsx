@@ -40,33 +40,6 @@ const SandSim = () => {
       )
   }, [])
 
-  const addSand = useCallback(
-    (centerRow: number, centerCol: number) => {
-      const { rows, cols } = getGridInfo()
-      const currentHue = rainbowMode
-        ? hueFromElapsedTime(colorSpeed, timeAccumulator.current)
-        : 45
-
-      // Add sand in a brush pattern
-      for (let dr = -BRUSH_SIZE + 1; dr < BRUSH_SIZE; dr++) {
-        for (let dc = -BRUSH_SIZE + 1; dc < BRUSH_SIZE; dc++) {
-          const row = centerRow + dr
-          const col = centerCol + dc
-
-          if (row >= 0 && row < rows && col >= 0 && col < cols) {
-            if (!grid.current[row][col].on) {
-              grid.current[row][col] = {
-                on: true,
-                hue: currentHue,
-              }
-            }
-          }
-        }
-      }
-    },
-    [rainbowMode]
-  )
-
   const updatePhysics = useCallback(() => {
     const current = grid.current
     if (current.length === 0) return
@@ -159,13 +132,39 @@ const SandSim = () => {
 
   const {
     canvasRef,
-    canvasReady,
     getCellFromPixel,
     getPixelFromCell,
     getGridInfo,
     isValidCell,
     forceDraw,
   } = useAnimatedGridCanvas(cellSize, handleUpdate, handleDraw, 60)
+
+  const addSand = useCallback(
+    (centerRow: number, centerCol: number) => {
+      const { rows, cols } = getGridInfo()
+      const currentHue = rainbowMode
+        ? hueFromElapsedTime(colorSpeed, timeAccumulator.current)
+        : 45
+
+      // Add sand in a brush pattern
+      for (let dr = -BRUSH_SIZE + 1; dr < BRUSH_SIZE; dr++) {
+        for (let dc = -BRUSH_SIZE + 1; dc < BRUSH_SIZE; dc++) {
+          const row = centerRow + dr
+          const col = centerCol + dc
+
+          if (row >= 0 && row < rows && col >= 0 && col < cols) {
+            if (!grid.current[row][col].on) {
+              grid.current[row][col] = {
+                on: true,
+                hue: currentHue,
+              }
+            }
+          }
+        }
+      }
+    },
+    [rainbowMode, colorSpeed, getGridInfo]
+  )
 
   // Helper function to get coordinates from mouse or touch event
   const getEventCoordinates = useCallback(
@@ -194,7 +193,7 @@ const SandSim = () => {
 
       return isValidCell(row, col) ? { row, col } : null
     },
-    [canvasReady, getCellFromPixel, isValidCell]
+    [getCellFromPixel, isValidCell, canvasRef]
   )
 
   // Start continuous pouring
@@ -314,7 +313,7 @@ const SandSim = () => {
   }
 
   return (
-    <div className="h-screen p-4 flex flex-col gap-4">
+    <div className="h-dvh p-4 flex flex-col gap-4 select-none">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Rainbow Sand Simulation</h1>
 
@@ -390,7 +389,6 @@ const SandSim = () => {
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
           className="border border-primary touch-none"
-          style={{ touchAction: "none" }}
         />
       </div>
     </div>

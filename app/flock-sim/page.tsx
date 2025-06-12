@@ -1,8 +1,5 @@
 "use client"
 
-import { useAnimatedCanvas } from "@/hooks/useAnimatedCanvas"
-import { clearCanvas } from "@/lib/utils-canvas"
-
 import {
   applyForce,
   calculateAlignment,
@@ -17,8 +14,8 @@ import {
 import { Boid } from "@/lib/types"
 import { setVectorMagnitude } from "@/lib/utils-vector"
 import { useCallback, useEffect, useRef } from "react"
+import { useCanvasAnimation } from "@/hooks/useAnimatedCanvas"
 
-const FPS = 60
 const BOIDS = 25
 const MAX_SPEED = 0.1
 const PERCEPTION = 120
@@ -66,10 +63,9 @@ const FlockSimPage = () => {
     })
   }
 
-  const { canvasRef, canvasReady, getSize } = useAnimatedCanvas(
+  const { canvasRef, canvasReady, getSize } = useCanvasAnimation(
     handleUpdate,
-    handleDraw,
-    FPS
+    handleDraw
   )
 
   // Perform setup

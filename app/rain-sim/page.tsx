@@ -2,7 +2,8 @@
 
 import { useEffect, useRef } from "react"
 
-import { useAnimatedCanvas } from "@/hooks/useAnimatedCanvas"
+import { useCanvasAnimation } from "@/hooks/useAnimatedCanvas"
+
 import { clearCanvas } from "@/lib/utils-canvas"
 
 import {
@@ -14,7 +15,6 @@ import {
 
 import { Raindrop } from "@/lib/types"
 
-const FPS = 60
 const STEP_SIZE = 10
 
 const RainSimPage = () => {
@@ -40,10 +40,9 @@ const RainSimPage = () => {
     })
   }
 
-  const { canvasRef, canvasReady, getSize } = useAnimatedCanvas(
+  const { canvasRef, canvasReady, getSize } = useCanvasAnimation(
     handleUpdate,
-    handleDraw,
-    FPS
+    handleDraw
   )
 
   // Perform setup
@@ -59,8 +58,9 @@ const RainSimPage = () => {
   // Handle mouse and touch events
   const handleClick = () => {
     if (!canvasReady) return
+    const size = getSize()
     for (let i = 0; i < STEP_SIZE; i++) {
-      raindrops.current.push(createRaindrop(getSize().width, getSize().height))
+      raindrops.current.push(createRaindrop(size.width, size.height))
     }
   }
 
@@ -68,7 +68,7 @@ const RainSimPage = () => {
     <div className="h-screen p-4 flex flex-col gap-2">
       <div className="flex flex-wrap gap-x-4 gap-y-2 justify-between">
         <h1 className="font-semibold text-2xl whitespace-nowrap">
-          Emily`&apos;`s Rain Sim
+          Emily&apos;s Rain Sim
         </h1>
       </div>
       <div className="min-h-0 min-w-0 grow">

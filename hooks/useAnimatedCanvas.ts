@@ -1,7 +1,7 @@
-import { useCanvas } from "@/hooks/useCanvas"
+import { useResponsiveCanvas } from "@/hooks/useResponsiveCanvas"
 import { useAnimationLoop } from "@/hooks/animationLoop"
 
-export const useAnimatedCanvas = (
+export const useCanvasAnimation = (
   onUpdate?: (
     deltaTime: number,
     size: { width: number; height: number }
@@ -9,10 +9,9 @@ export const useAnimatedCanvas = (
   onDraw?: (
     ctx: CanvasRenderingContext2D,
     size: { width: number; height: number }
-  ) => void,
-  fps = 60
+  ) => void
 ) => {
-  const { canvasRef, canvasReady, getContext, getSize } = useCanvas()
+  const { canvasRef, canvasReady, getContext, getSize } = useResponsiveCanvas()
 
   useAnimationLoop(
     (deltaTime) => {
@@ -26,7 +25,7 @@ export const useAnimatedCanvas = (
       onUpdate?.(deltaTime, size)
       onDraw?.(ctx, size)
     },
-    { fps, enabled: canvasReady }
+    { enabled: canvasReady }
   )
 
   return {

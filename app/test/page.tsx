@@ -1,13 +1,12 @@
 "use client"
 
-import { useCallback, useEffect, useRef } from "react"
+import { useEffect, useRef } from "react"
+
+import { useCanvasAnimation } from "@/hooks/useAnimatedCanvas"
 
 import { FPSCounter } from "@/components/FPSCounter"
 
-import { useAnimatedCanvas } from "@/hooks/useAnimatedCanvas"
-
 import { clearCanvas } from "@/lib/utils-canvas"
-
 import { Circle } from "@/lib/types"
 
 import {
@@ -17,19 +16,10 @@ import {
   updateCirclePosition,
 } from "@/lib/sims/test"
 
-const FPS = 60
 const CIRCLES = 10
 
 const TestPage = () => {
   const circles = useRef<Circle[]>([])
-
-  // Setup
-  // Start by adding a few circles to the canvas
-  const setup = useCallback((size: { width: number; height: number }) => {
-    for (let i = 1; i <= CIRCLES; i++) {
-      circles.current.push(createCircle(size.width, size.height))
-    }
-  }, [])
 
   // Move the circles around and have them bounce off of the edges
   const handleUpdate = (
@@ -53,18 +43,19 @@ const TestPage = () => {
     })
   }
 
-  const { canvasRef, canvasReady, getSize } = useAnimatedCanvas(
+  const { canvasRef, canvasReady, getSize } = useCanvasAnimation(
     handleUpdate,
-    handleDraw,
-    FPS
+    handleDraw
   )
 
   useEffect(() => {
     if (!canvasReady) return
 
     const size = getSize()
-    setup(size)
-  }, [canvasReady, getSize, setup])
+    for (let i = 1; i <= CIRCLES; i++) {
+      circles.current.push(createCircle(size.width, size.height))
+    }
+  }, [canvasReady, getSize])
 
   return (
     <div className="h-screen p-4 flex flex-col gap-2">
