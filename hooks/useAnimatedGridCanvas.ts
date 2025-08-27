@@ -1,23 +1,23 @@
 import { useCallback, useEffect, useRef } from "react"
-import { useAnimationLoop } from "./animationLoop"
-import { GridInfo, useGridCanvas } from "./useGridCanvas"
+
+import { useAnimationLoop } from "@/hooks/animationLoop"
+import {
+  GridInfo,
+  useResponsiveGridCanvas,
+} from "@/hooks/useResponsiveGridCanvas"
 
 export const useAnimatedGridCanvas = (
   cellSize: number,
-  onUpdate?: (
-    deltaTime: number,
-    ctx: CanvasRenderingContext2D,
-    gridInfo: GridInfo
-  ) => void,
+  onUpdate?: (deltaTime: number, gridInfo: GridInfo) => void,
   onDraw?: (ctx: CanvasRenderingContext2D, gridInfo: GridInfo) => void,
-  fps = 60
+  fps = 10
 ) => {
-  const gridCanvas = useGridCanvas(cellSize)
+  const gridCanvas = useResponsiveGridCanvas(cellSize)
   const { canvasReady, getContext, getGridInfo } = gridCanvas
 
-  // Store the callbacks in refs so forceDraw can access them
   const drawCallbackRef = useRef(onDraw)
   const updateCallbackRef = useRef(onUpdate)
+  const accumulatedTime = useRef(0)
 
   useEffect(() => {
     drawCallbackRef.current = onDraw
@@ -32,9 +32,14 @@ export const useAnimatedGridCanvas = (
 
     if (!ctx || !drawCallbackRef.current) return
 
-    // Call the draw function immediately
     drawCallbackRef.current(ctx, gridInfo)
   }, [canvasReady, getContext, getGridInfo])
+
+  useEffect(() => {
+    if (canvasReady) forceDraw()
+  }, [canvasReady, forceDraw])
+
+  const targetInterval = 1000 / fps
 
   useAnimationLoop(
     (deltaTime) => {
@@ -45,14 +50,21 @@ export const useAnimatedGridCanvas = (
 
       if (!ctx) return
 
-      updateCallbackRef.current?.(deltaTime, ctx, gridInfo)
-      drawCallbackRef.current?.(ctx, gridInfo)
+      accumulatedTime.current += deltaTime
+
+      if (accumulatedTime.current >= targetInterval) {
+        const gridDeltaTime = accumulatedTime.current
+        accumulatedTime.current = 0
+
+        updateCallbackRef.current?.(gridDeltaTime, gridInfo)
+        drawCallbackRef.current?.(ctx, gridInfo)
+      }
     },
     { enabled: canvasReady }
   )
 
   return {
     ...gridCanvas,
-    forceDraw, // Add forceDraw to the returned object
+    forceDraw,
   }
 }

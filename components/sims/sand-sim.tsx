@@ -13,11 +13,10 @@ import { CircleXIcon, PlayIcon, SquareIcon } from "lucide-react"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Button } from "@/components/ui/button"
 
-import { clearCanvas } from "@/lib/utils-canvas"
 import { drawCell } from "@/lib/utils-canvas-grid"
 
-import { Cell } from "@/lib/types"
 import { hslToHex } from "@/lib/utils-colors"
+import { Cell } from "@/hooks/useResponsiveGridCanvas"
 
 const DEFAULT_CELL_SIZE = 10
 const DEFAULT_FPS = 10
@@ -132,7 +131,7 @@ const SandSim = () => {
     const ctx = canvas.getContext("2d")
     if (!ctx) return
 
-    clearCanvas(ctx, canvasSize.current.width, canvasSize.current.height)
+    ctx.clearRect(0, 0, canvasSize.current.width, canvasSize.current.height)
     cells.current.forEach((cell) => {
       drawCell(ctx, cellSize, cell.x, cell.y, cell.color)
     })

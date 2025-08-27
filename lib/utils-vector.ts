@@ -4,22 +4,24 @@ export type Vector2D = {
 }
 
 /**
+ * Creates a vector consisting of a x and y coordinate.
+ * @param x - x coordinate
+ * @param y - y coordinate
+ */
+export const createVector = (x: number, y: number): Vector2D => ({ x, y })
+
+/**
  * Creates a vector from angle and magnitude
- * @param angle - Angle in radians
+ * @param angle - Angle in degrees (0 points right)
  * @param magnitude - Length of the vector
  */
 export const createVectorFromAngle = (
   angle: number,
   magnitude: number
 ): Vector2D => ({
-  x: Math.cos(angle) * magnitude,
-  y: Math.sin(angle) * magnitude,
+  x: Math.cos((angle * Math.PI) / 180) * magnitude,
+  y: Math.sin((angle * Math.PI) / 180) * magnitude,
 })
-
-/**
- * Creates a vector from x and y components
- */
-export const createVector = (x: number, y: number): Vector2D => ({ x, y })
 
 /**
  * Creates a unit vector pointing in the given direction
@@ -129,4 +131,11 @@ export const vectorDistance = (a: Vector2D, b: Vector2D): number => {
   const dx = b.x - a.x
   const dy = b.y - a.y
   return Math.sqrt(dx * dx + dy * dy)
+}
+
+/**
+ * Checks if a vector is exactly zero (both x and y components are 0)
+ */
+export const isZeroVector = (vector: Vector2D): boolean => {
+  return vector.x === 0 && vector.y === 0
 }

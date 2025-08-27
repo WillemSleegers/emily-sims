@@ -4,7 +4,7 @@ import { useRef, useState, useCallback, useEffect } from "react"
 import { XIcon } from "lucide-react"
 
 import { useAnimatedGridCanvas } from "@/hooks/useAnimatedGridCanvas"
-import { GridInfo } from "@/hooks/useGridCanvas"
+import { GridInfo } from "@/hooks/useResponsiveGridCanvas"
 
 import { Button } from "@/components/ui/button"
 
@@ -12,6 +12,7 @@ import { hslToHex, hueFromElapsedTime } from "@/lib/utils-colors"
 
 import { SandParticle } from "@/lib/sims/sand"
 
+const FPS = 10
 const BRUSH_SIZE = 1
 
 const SandSim = () => {
@@ -75,11 +76,7 @@ const SandSim = () => {
     grid.current = newGrid
   }, [])
 
-  const handleUpdate = (
-    deltaTime: number,
-    ctx: CanvasRenderingContext2D,
-    gridInfo: GridInfo
-  ) => {
+  const handleUpdate = (deltaTime: number, gridInfo: GridInfo) => {
     const { rows, cols } = gridInfo
 
     // Update time accumulator for color rotation
@@ -120,7 +117,8 @@ const SandSim = () => {
     grid.current.forEach((row, rowIndex) => {
       row.forEach((cell, colIndex) => {
         if (cell.on) {
-          const { x, y } = getPixelFromCell(rowIndex, colIndex)
+          const x = rowIndex
+          const y = colIndex
 
           if (cell.hue) ctx.fillStyle = hslToHex(cell.hue, 80, 60)
 
@@ -133,11 +131,10 @@ const SandSim = () => {
   const {
     canvasRef,
     getCellFromPixel,
-    getPixelFromCell,
     getGridInfo,
-    isValidCell,
+
     forceDraw,
-  } = useAnimatedGridCanvas(cellSize, handleUpdate, handleDraw, 60)
+  } = useAnimatedGridCanvas(cellSize, handleUpdate, handleDraw, FPS)
 
   const addSand = useCallback(
     (centerRow: number, centerCol: number) => {
@@ -191,9 +188,9 @@ const SandSim = () => {
 
       const { row, col } = getCellFromPixel(x, y)
 
-      return isValidCell(row, col) ? { row, col } : null
+      return { row, col }
     },
-    [getCellFromPixel, isValidCell, canvasRef]
+    [getCellFromPixel, canvasRef]
   )
 
   // Start continuous pouring

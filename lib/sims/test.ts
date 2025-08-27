@@ -1,21 +1,20 @@
-import { createVector, createVectorFromAngle } from "@/lib/utils-vector"
-import { randomNumber } from "@/lib/random"
+import { Vector2D } from "@/lib/utils-vector"
 
-import { Circle } from "@/lib/types"
+export type Circle = {
+  position: Vector2D
+  velocity: Vector2D
+  radius: number
+  colorFill: string
+  colorStroke?: string
+}
 
-export const createCircle = (canvasWidth: number, canvasHeight: number) => {
+export const createCircle = (position: Vector2D, velocity: Vector2D) => {
   return {
-    position: createVector(
-      randomNumber(50, canvasWidth - 50),
-      randomNumber(50, canvasHeight - 50)
-    ),
-    velocity: createVectorFromAngle(
-      randomNumber(0, 360),
-      randomNumber(50, 100)
-    ),
-    radius: 50,
-    colorStroke: "white",
-    colorFill: "green",
+    position: position,
+    velocity: velocity,
+    radius: 25,
+    colorFill: "white",
+    colorStroke: "black",
   }
 }
 

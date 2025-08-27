@@ -2,6 +2,7 @@
 
 import {
   applyForce,
+  Boid,
   calculateAlignment,
   calculateCoherence,
   calculateSeparation,
@@ -11,24 +12,22 @@ import {
   handleBoidEdgeCollisions,
   updateBoid,
 } from "@/lib/sims/boid"
-import { Boid } from "@/lib/types"
-import { setVectorMagnitude } from "@/lib/utils-vector"
-import { useCallback, useEffect, useRef } from "react"
+
+import {
+  createVector,
+  createVectorFromAngle,
+  setVectorMagnitude,
+} from "@/lib/utils-vector"
+import { useEffect, useRef } from "react"
 import { useCanvasAnimation } from "@/hooks/useAnimatedCanvas"
+import { randomNumber } from "@/lib/random/random"
 
 const BOIDS = 25
 const MAX_SPEED = 0.1
-const PERCEPTION = 120
 const SHOW_PERCEPTION = false
 
 const FlockSimPage = () => {
   const flock = useRef<Boid[]>([])
-
-  const setup = useCallback((size: { width: number; height: number }) => {
-    for (let i = 0; i < BOIDS; i++) {
-      flock.current.push(createBoid(size.width, size.height, PERCEPTION))
-    }
-  }, [])
 
   const handleUpdate = (
     deltaTime: number,
@@ -73,8 +72,18 @@ const FlockSimPage = () => {
     if (!canvasReady) return
 
     const size = getSize()
-    setup(size)
-  }, [canvasReady, getSize, setup])
+    for (let i = 0; i < BOIDS; i++) {
+      const position = createVector(
+        randomNumber(0, size.width),
+        randomNumber(0, size.height)
+      )
+      const velocity = createVectorFromAngle(randomNumber(0, 360), 25)
+      const boid = createBoid(position, velocity)
+      flock.current.push(boid)
+    }
+  }, [canvasReady, getSize])
+
+  const handleOnMouseDown = () => {}
 
   return (
     <div className="h-screen p-4 flex flex-col gap-2">
@@ -87,6 +96,7 @@ const FlockSimPage = () => {
         <canvas
           ref={canvasRef}
           className="border border-primary rounded w-full h-full"
+          onMouseDown={handleOnMouseDown}
         />
       </div>
     </div>

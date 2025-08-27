@@ -1,27 +1,31 @@
 import { useRef, useEffect, useCallback, useState } from "react"
 
-export interface GridInfo {
+export type Cell = {
+  x: number
+  y: number
+  color: string
+}
+
+export type GridInfo = {
   cellSize: number
   rows: number
   cols: number
   canvasWidth: number
   canvasHeight: number
-  offsetX: number
-  offsetY: number
 }
 
-export const useGridCanvas = (cellSize: number) => {
+export const useResponsiveGridCanvas = (cellSize: number) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [canvasReady, setCanvasReady] = useState(false)
+
   const gridInfo = useRef<GridInfo>({
     cellSize,
     rows: 0,
     cols: 0,
     canvasWidth: 0,
     canvasHeight: 0,
-    offsetX: 0,
-    offsetY: 0,
   })
+
+  const [canvasReady, setCanvasReady] = useState(false)
 
   const calculateGridDimensions = useCallback(
     (containerWidth: number, containerHeight: number): GridInfo => {
@@ -33,18 +37,12 @@ export const useGridCanvas = (cellSize: number) => {
       const canvasWidth = cols * cellSize
       const canvasHeight = rows * cellSize
 
-      // Calculate offsets for centering
-      const offsetX = (containerWidth - canvasWidth) / 2
-      const offsetY = (containerHeight - canvasHeight) / 2
-
       return {
         cellSize,
         rows,
         cols,
         canvasWidth,
         canvasHeight,
-        offsetX,
-        offsetY,
       }
     },
     [cellSize]
@@ -55,6 +53,7 @@ export const useGridCanvas = (cellSize: number) => {
     if (!canvas?.parentElement) return
 
     const parent = canvas.parentElement
+
     const containerWidth = parent.clientWidth
     const containerHeight = parent.clientHeight
 
@@ -68,7 +67,7 @@ export const useGridCanvas = (cellSize: number) => {
       current.rows === newGridInfo.rows &&
       current.cols === newGridInfo.cols
     ) {
-      return // No change needed
+      return
     }
 
     gridInfo.current = newGridInfo
@@ -81,10 +80,6 @@ export const useGridCanvas = (cellSize: number) => {
     canvas.style.width = `${newGridInfo.canvasWidth}px`
     canvas.style.height = `${newGridInfo.canvasHeight}px`
 
-    // Center the canvas
-    canvas.style.marginLeft = `${newGridInfo.offsetX}px`
-    canvas.style.marginTop = `${newGridInfo.offsetY}px`
-
     const ctx = canvas.getContext("2d")
     if (ctx) {
       ctx.setTransform(1, 0, 0, 1, 0, 0)
@@ -96,7 +91,7 @@ export const useGridCanvas = (cellSize: number) => {
     }
   }, [calculateGridDimensions])
 
-  // Only re-run when cellSize changes
+  // Re-run when cellSize changes
   useEffect(() => {
     if (canvasReady) {
       handleResize()
@@ -111,11 +106,8 @@ export const useGridCanvas = (cellSize: number) => {
     resizeObserver.observe(canvas.parentElement)
     handleResize()
 
-    window.addEventListener("resize", handleResize)
-
     return () => {
       resizeObserver.disconnect()
-      window.removeEventListener("resize", handleResize)
     }
   }, [handleResize])
 
@@ -126,7 +118,7 @@ export const useGridCanvas = (cellSize: number) => {
   const getGridInfo = useCallback(() => gridInfo.current, [])
 
   const drawGrid = useCallback(
-    (ctx: CanvasRenderingContext2D, strokeStyle = "#ddd", lineWidth = 1) => {
+    (ctx: CanvasRenderingContext2D, strokeStyle = "white", lineWidth = 1) => {
       const { canvasWidth, canvasHeight, rows, cols } = gridInfo.current
 
       ctx.strokeStyle = strokeStyle
@@ -149,6 +141,21 @@ export const useGridCanvas = (cellSize: number) => {
         ctx.lineTo(canvasWidth, y)
         ctx.stroke()
       }
+    },
+    [cellSize]
+  )
+
+  const drawCell = useCallback(
+    (
+      ctx: CanvasRenderingContext2D,
+      x: number,
+      y: number,
+      fillStyle = "red"
+    ) => {
+      ctx.beginPath()
+      ctx.fillStyle = fillStyle
+      ctx.rect(x * cellSize, y * cellSize, cellSize, cellSize)
+      ctx.fill()
     },
     [cellSize]
   )
@@ -177,16 +184,6 @@ export const useGridCanvas = (cellSize: number) => {
     [cellSize]
   )
 
-  const getCellCenter = useCallback(
-    (row: number, col: number) => {
-      return {
-        x: col * cellSize + cellSize / 2,
-        y: row * cellSize + cellSize / 2,
-      }
-    },
-    [cellSize]
-  )
-
   const isValidCell = useCallback((row: number, col: number) => {
     const { rows, cols } = gridInfo.current
     return row >= 0 && row < rows && col >= 0 && col < cols
@@ -197,10 +194,10 @@ export const useGridCanvas = (cellSize: number) => {
     canvasReady,
     getContext,
     getGridInfo,
-    drawGrid,
     getCellFromPixel,
     getPixelFromCell,
-    getCellCenter,
     isValidCell,
+    drawGrid,
+    drawCell,
   }
 }

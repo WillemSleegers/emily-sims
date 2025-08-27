@@ -1,10 +1,8 @@
-import { Boid } from "@/lib/types"
 import {
   addVectors,
-  createVector,
-  createVectorFromAngle,
   divideVector,
   limitVector,
+  scaleVector,
   setVectorMagnitude,
   subtractVectors,
   Vector2D,
@@ -12,23 +10,36 @@ import {
   vectorMagnitude,
   vectorToAngle,
 } from "../utils-vector"
-import { randomNumber } from "../random"
+
+export type Boid = {
+  position: Vector2D
+  velocity: Vector2D
+  angle: number
+  width: number
+  length: number
+  perception: number
+  fillColor: string
+  strokeColor?: string
+}
 
 export const createBoid = (
-  canvasWidth: number,
-  canvasHeight: number,
-  perception: number = 60
+  position: Vector2D,
+  velocity: Vector2D,
+  angle: number = 0,
+  width: number = 10,
+  length: number = 15,
+  perception: number = 60,
+  fillColor: string = "white",
+  strokeColor?: string
 ): Boid => ({
-  position: createVector(
-    randomNumber(0, canvasWidth),
-    randomNumber(0, canvasHeight)
-  ),
-  velocity: createVectorFromAngle(randomNumber(0, 2 * Math.PI), 0.25),
-  angle: 0,
-  width: 10,
-  length: 15,
+  position: position,
+  velocity: velocity,
+  angle: angle,
+  width: width,
+  length: length,
   perception: perception,
-  fillColor: "white",
+  fillColor: fillColor,
+  strokeColor: strokeColor,
 })
 
 /**
@@ -197,12 +208,12 @@ export const handleBoidEdgeCollisions = (
  * @param deltaTime - Time step for the update (optional, defaults to 1)
  */
 export const updateBoid = (boid: Boid, deltaTime: number = 1): void => {
-  // Update position
-  boid.position.x += boid.velocity.x * deltaTime
-  boid.position.y += boid.velocity.y * deltaTime
-
   // Update angle to match velocity direction
   boid.angle = vectorToAngle(boid.velocity)
+
+  // Update position
+  const scaledVelocity = scaleVector(boid.velocity, deltaTime)
+  boid.position = addVectors(boid.position, scaledVelocity)
 }
 
 export const drawBoid = (ctx: CanvasRenderingContext2D, boid: Boid): void => {

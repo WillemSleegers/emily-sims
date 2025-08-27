@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, MouseEvent } from "react"
 
 import { useCanvasAnimation } from "@/hooks/useAnimatedCanvas"
 
@@ -8,18 +8,24 @@ import { FPSCounter } from "@/components/FPSCounter"
 
 import {
   Circle,
-  createCircle,
-  drawCircle,
   handleCircleEdgeCollisions,
   updateCirclePosition,
 } from "@/lib/sims/test"
-import { randomNumber } from "@/lib/random/random"
-import { createVectorFromAngle } from "@/lib/utils-vector"
+import { createVector } from "@/lib/utils-vector"
 
-const CIRCLES = 10
+import {
+  createQuadtree,
+  Boundary,
+  createBoundary,
+  QuadtreeNode,
+  insertPoint,
+  drawQuadtree,
+  drawPoints,
+} from "@/lib/quadtree"
 
-const TestPage = () => {
+const QuadtreePage = () => {
   const circles = useRef<Circle[]>([])
+  const quadtree = useRef<QuadtreeNode>(undefined)
 
   // Move the circles around and have them bounce off of the edges
   const handleUpdate = (
@@ -38,9 +44,10 @@ const TestPage = () => {
     size: { width: number; height: number }
   ) => {
     ctx.clearRect(0, 0, size.width, size.height)
-    circles.current.forEach((circle) => {
-      drawCircle(ctx, circle)
-    })
+    if (!quadtree.current) return
+
+    drawQuadtree(ctx, quadtree.current)
+    drawPoints(ctx, quadtree.current)
   }
 
   const { canvasRef, canvasReady, getSize } = useCanvasAnimation(
@@ -48,17 +55,32 @@ const TestPage = () => {
     handleDraw
   )
 
-  // On setup
+  // Setup
   useEffect(() => {
     if (!canvasReady) return
 
     const size = getSize()
-    for (let i = 1; i <= CIRCLES; i++) {
-      const position = { x: size.width / 2, y: size.height / 2 }
-      const velocity = createVectorFromAngle(randomNumber(0, 360), 50)
-      circles.current.push(createCircle(position, velocity))
-    }
+
+    const boundary: Boundary = createBoundary(
+      size.width / 2,
+      size.height / 2,
+      size.width / 2,
+      size.height / 2
+    )
+    const capacity = 1
+    quadtree.current = createQuadtree(boundary, capacity)
   }, [canvasReady, getSize])
+
+  const handleClick = (event: MouseEvent<HTMLCanvasElement>) => {
+    if (!quadtree.current) return
+
+    const point = createVector(
+      event.nativeEvent.offsetX,
+      event.nativeEvent.offsetY
+    )
+
+    insertPoint(quadtree.current, point)
+  }
 
   return (
     <div className="h-screen p-4 flex flex-col gap-2">
@@ -70,10 +92,11 @@ const TestPage = () => {
         <canvas
           ref={canvasRef}
           className="border border-primary rounded w-full h-full"
+          onClick={handleClick}
         />
       </div>
     </div>
   )
 }
 
-export default TestPage
+export default QuadtreePage

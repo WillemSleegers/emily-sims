@@ -4,18 +4,18 @@ import { useEffect, useRef } from "react"
 
 import { useCanvasAnimation } from "@/hooks/useAnimatedCanvas"
 
-import { clearCanvas } from "@/lib/utils-canvas"
-
 import {
   createRaindrop,
   drawRaindrop,
   handleRaindropEdgeCollisions,
+  Raindrop,
   updateRaindropPosition,
 } from "@/lib/sims/rain"
 
-import { Raindrop } from "@/lib/types"
+import { addVectors, createVector, scaleVector } from "@/lib/utils-vector"
 
-const STEP_SIZE = 10
+const RAINDROPS = 10
+const GRAVITY = createVector(0, 9.8)
 
 const RainSimPage = () => {
   const raindrops = useRef<Raindrop[]>([])
@@ -25,8 +25,10 @@ const RainSimPage = () => {
     size: { width: number; height: number }
   ) => {
     raindrops.current.forEach((raindrop) => {
+      raindrop.acceleration = addVectors(raindrop.acceleration, GRAVITY)
       handleRaindropEdgeCollisions(raindrop, size.height)
       updateRaindropPosition(raindrop, deltaTime)
+      raindrop.acceleration = scaleVector(raindrop.acceleration, 0)
     })
   }
 
@@ -34,7 +36,7 @@ const RainSimPage = () => {
     ctx: CanvasRenderingContext2D,
     size: { width: number; height: number }
   ) => {
-    clearCanvas(ctx, size.width, size.height)
+    ctx.clearRect(0, 0, size.width, size.height)
     raindrops.current.forEach((raindrop) => {
       drawRaindrop(ctx, raindrop)
     })
@@ -50,7 +52,7 @@ const RainSimPage = () => {
     if (!canvasReady) return
 
     const size = getSize()
-    for (let i = 0; i < STEP_SIZE; i++) {
+    for (let i = 0; i < RAINDROPS; i++) {
       raindrops.current.push(createRaindrop(size.width, size.height))
     }
   }, [canvasReady, getSize])
@@ -59,7 +61,7 @@ const RainSimPage = () => {
   const handleClick = () => {
     if (!canvasReady) return
     const size = getSize()
-    for (let i = 0; i < STEP_SIZE; i++) {
+    for (let i = 0; i < RAINDROPS; i++) {
       raindrops.current.push(createRaindrop(size.width, size.height))
     }
   }

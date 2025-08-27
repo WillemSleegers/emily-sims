@@ -1,8 +1,9 @@
 "use client"
 
-import { useAnimatedGridCanvas } from "@/hooks/useAnimatedGridCanvas"
-import { GridInfo } from "@/hooks/useGridCanvas"
 import { useRef, useState, useCallback } from "react"
+
+import { GridInfo } from "@/hooks/useResponsiveGridCanvas"
+import { useAnimatedGridCanvas } from "@/hooks/useAnimatedGridCanvas"
 
 const ResponsiveGameOfLife = () => {
   const [cellSize, setCellSize] = useState(10)
@@ -11,7 +12,7 @@ const ResponsiveGameOfLife = () => {
 
   const gameState = useRef<boolean[][]>([])
   const lastUpdate = useRef(0)
-  const updateInterval = 200 // milliseconds
+  const updateInterval = 200 // In milliseconds
 
   const initializeGame = useCallback((rows: number, cols: number) => {
     // Initialize with random pattern
@@ -71,11 +72,7 @@ const ResponsiveGameOfLife = () => {
     setGeneration((prev) => prev + 1)
   }, [countNeighbors])
 
-  const handleUpdate = (
-    deltaTime: number,
-    ctx: CanvasRenderingContext2D,
-    gridInfo: GridInfo
-  ) => {
+  const handleUpdate = (deltaTime: number, gridInfo: GridInfo) => {
     const { rows, cols } = gridInfo
 
     // Reinitialize if grid dimensions changed
@@ -108,9 +105,8 @@ const ResponsiveGameOfLife = () => {
       return // Skip drawing during reinitialization
     }
 
-    // CRITICAL: Fill canvas with background FIRST to prevent white flashing
-    // This must happen before anything else
-    ctx.fillStyle = "#000000" // Black background
+    // Fill canvas with background FIRST to prevent white flashing
+    ctx.fillStyle = "#000000"
     ctx.fillRect(0, 0, canvasWidth, canvasHeight)
 
     // Draw live cells in white
