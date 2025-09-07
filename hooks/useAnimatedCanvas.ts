@@ -18,9 +18,9 @@ export const useCanvasAnimation = (
       if (!canvasReady) return
 
       const ctx = getContext()
-      const size = getSize()
-
       if (!ctx) return
+
+      const size = getSize()
 
       onUpdate?.(deltaTime, size)
       onDraw?.(ctx, size)
