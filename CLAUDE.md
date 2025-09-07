@@ -129,3 +129,20 @@ Prefer simple, direct solutions over complex abstractions:
 - **Readable over clever**: Choose clear, straightforward code over clever but hard-to-understand solutions
 
 Example: Use `Math.abs(180 - angle)` instead of generic modulo arithmetic when you know angles are constrained to 0-360°.
+
+## Commit Messages
+
+When creating git commits, use clear, down-to-earth language:
+
+- **Be straightforward**: Describe what was added, changed, or fixed in plain language
+- **Avoid fancy words**: Don't use terms like "sophisticated", "elegant", or "robust" - just describe what it does
+- **Focus on functionality**: Explain what the feature does for users, not implementation details
+- **Use simple verbs**: "Add", "Fix", "Update", "Remove" are better than "Implement", "Enhance", "Refactor"
+- **List key changes**: Use bullet points to break down what was changed
+- **Keep it practical**: Focus on what someone using the code would notice or care about
+
+Good: `Add walker tails and color palette selection`
+Bad: `Implement sophisticated trail rendering system with advanced color palette architecture`
+
+Good: `Fix walker collision detection to use walker radius`
+Bad: `Enhance collision detection algorithm with radius-based boundary calculations`
