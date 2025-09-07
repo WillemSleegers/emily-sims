@@ -12,10 +12,14 @@ export const useAnimationLoop = (
 ) => {
   const { enabled = true } = options
 
+  // Track requestAnimationFrame ID so we can cancel it during cleanup
   const animationId = useRef(0)
-  const callbackRef = useRef(callback)
-  const lastCallTime = useRef(0)
 
+  // Store callback in ref to prevent stale closures in animation loop
+  const callbackRef = useRef(callback)
+  const previousTimestamp = useRef(0)
+
+  // Update callback ref whenever callback changes to avoid stale closures
   useEffect(() => {
     callbackRef.current = callback
   }, [callback])
@@ -25,25 +29,22 @@ export const useAnimationLoop = (
 
     const animate = (timestamp: number) => {
       // Handle first frame
-      if (lastCallTime.current === 0) {
-        lastCallTime.current = timestamp
+      if (previousTimestamp.current === 0) {
+        previousTimestamp.current = timestamp
         animationId.current = requestAnimationFrame(animate)
         return
       }
 
-      // Bounds check deltaTime (clamp between 0-100ms)
-      const deltaTime = Math.max(
-        0,
-        Math.min(timestamp - lastCallTime.current, 100)
-      )
+      // Use Math.max to ensure deltaTime is never negative (protects against timing quirks)
+      const deltaTime = Math.max(0, timestamp - previousTimestamp.current)
 
       callbackRef.current(deltaTime)
-      lastCallTime.current = timestamp
+      previousTimestamp.current = timestamp
       animationId.current = requestAnimationFrame(animate)
     }
 
     // Initialize timing and start animation
-    lastCallTime.current = 0
+    previousTimestamp.current = 0
     animationId.current = requestAnimationFrame(animate)
 
     return () => {
