@@ -49,11 +49,11 @@ export const createWalker = (
 ): Walker => {
   const defaultConfig: WalkerMovementConfig = {
     mode: "linear",
-    direction: randomNumber(360), // random direction for all modes
+    direction: randomNumber(360),
     sineAmplitude: 50,
     sineFrequency: 0.02,
-    noiseScale: 0.01, // scaling factor for sampling noise coordinates
-    noiseMaxAngleChange: 15, // degrees per second for noise mode
+    noiseScale: 0.01,
+    noiseMaxAngleChange: 360,
   }
 
   return {
