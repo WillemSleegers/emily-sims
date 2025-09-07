@@ -23,7 +23,7 @@ const Home = () => {
         </li>
 
         <li>
-          <Link href="/walker">Walker</Link>
+          <Link href="/walker-linear">Walker (linear)</Link>
         </li>
       </ul>
       <h2>Testing</h2>
