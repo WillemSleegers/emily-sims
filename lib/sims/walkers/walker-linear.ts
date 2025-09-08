@@ -1,6 +1,5 @@
 import {
   Vector2D,
-  createVector,
   createVectorFromAngle,
   addVectors,
   scaleVector,
@@ -14,67 +13,82 @@ export type Walker = {
   velocity: Vector2D
   speed: number
   radius: number
-  hue: number
   direction: number
+  hue: number
   tail: Vector2D[]
   maxTailLength: number
+  bounce: boolean
 }
 
 /**
- * Creates a new walker with specified position and radius
+ * Creates a new walker with specified position and movement properties
  * @param position - Starting position for the walker
- * @param speed - Movement speed in pixels per second (default: 150)
+ * @param speed - Movement speed in pixels per second (default: 50)
  * @param radius - Visual radius for drawing (default: 5)
- * @returns A new Walker instance
+ * @param maxTailLength - Maximum number of tail segments (default: 40)
+ * @param bounce - Whether walker bounces off edges or wraps around (default: true)
+ * @param hue - Color hue for walker and tail (optional, uses random blue-green if not provided)
+ * @returns A new Walker instance with initial velocity calculated from random direction
  */
 export const createWalker = (
   position: Vector2D,
   speed: number = 50,
   radius: number = 5,
   maxTailLength: number = 40,
+  bounce: boolean = true,
   hue?: number
 ): Walker => {
+  const direction = randomNumber(360)
+
   return {
     position: position,
-    velocity: createVector(0, 0),
+    direction: direction,
+    velocity: createVectorFromAngle(direction, speed),
     speed: speed,
     radius: radius,
-    hue: hue ?? randomNumber(60) + 180, // Use provided hue or default analogous palette
-    direction: randomNumber(360),
     tail: [position],
     maxTailLength: maxTailLength,
+    bounce: bounce,
+    hue: hue ?? randomNumber(60) + 180, // Use provided hue or default analogous palette
   }
 }
 
 /**
- * Handles walker collision with canvas edges
- * @param walker - The walker to check for collisions
- * @param canvasWidth - Width of the canvas
- * @param canvasHeight - Height of the canvas
- * @param bounce - If true, reflects direction; if false, wraps position
+ * Handles edge collision detection and updates walker velocity when direction changes
+ * @param walker - The walker to update
+ * @param canvasWidth - Width of the canvas boundary
+ * @param canvasHeight - Height of the canvas boundary
  *
- * @important This function should be called BEFORE movement calculations
- * (updateWalkerMovement) so that direction changes take effect in the same frame.
- *
- * For bouncing: modifies walker.direction using reflection math
+ * For bouncing walkers: reflects direction using bounce math and recalculates velocity
  * - Horizontal walls: newDirection = 180° - oldDirection
- * - Vertical walls: newDirection = -oldDirection (360° - oldDirection)
+ * - Vertical walls: newDirection = 360° - oldDirection
+ *
+ * For wrapping walkers: teleports position to opposite edge
+ *
+ * Only recalculates velocity when direction actually changes, eliminating redundant calculations
  */
-export const handleEdgeCollision = (
+export const updateWalkerMovement = (
   walker: Walker,
   canvasWidth: number,
-  canvasHeight: number,
-  bounce: boolean = false
-) => {
-  if (bounce) {
+  canvasHeight: number
+): void => {
+  if (walker.bounce) {
     // Handle horizontal edges (left/right walls)
-    if (walker.position.x <= walker.radius || walker.position.x >= canvasWidth - walker.radius) {
+    if (
+      walker.position.x <= walker.radius ||
+      walker.position.x >= canvasWidth - walker.radius
+    ) {
       walker.direction = 180 - walker.direction
+      walker.velocity = createVectorFromAngle(walker.direction, walker.speed)
     }
 
     // Handle vertical edges (top/bottom walls)
-    if (walker.position.y <= walker.radius || walker.position.y >= canvasHeight - walker.radius) {
+    if (
+      walker.position.y <= walker.radius ||
+      walker.position.y >= canvasHeight - walker.radius
+    ) {
       walker.direction = 360 - walker.direction
+      walker.velocity = createVectorFromAngle(walker.direction, walker.speed)
     }
   } else {
     // Wrapping behavior (teleport to opposite side)
@@ -90,14 +104,6 @@ export const handleEdgeCollision = (
       walker.position.y = 0
     }
   }
-}
-
-/**
- * Updates walker movement by setting velocity based on direction and speed
- * @param walker - The walker to update
- */
-export const updateWalkerMovement = (walker: Walker): void => {
-  walker.velocity = createVectorFromAngle(walker.direction, walker.speed)
 }
 
 /**

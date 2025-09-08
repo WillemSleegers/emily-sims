@@ -6,7 +6,6 @@ import {
   Walker,
   createWalker,
   drawWalker,
-  handleEdgeCollision,
   updateWalkerMovement,
   move,
 } from "@/lib/sims/walkers/walker-linear"
@@ -15,10 +14,24 @@ import { useCanvasAnimation } from "@/hooks/useAnimatedCanvas"
 import { createVector } from "@/lib/utils-vector"
 import { ModeToggle } from "@/components/mode-toggle"
 import { Button } from "@/components/ui/button"
-import { Rabbit, Turtle, Zap, Droplets, Flame, Flower2, Leaf, Cherry } from "lucide-react"
+import {
+  Rabbit,
+  Turtle,
+  Zap,
+  Droplets,
+  Flame,
+  Flower2,
+  Leaf,
+  Cherry,
+} from "lucide-react"
 
 type SpeedOption = "slow" | "medium" | "fast"
-type HueRange = "blueGreen" | "redOrange" | "purplePink" | "yellowGreen" | "orangeRed"
+type HueRange =
+  | "blueGreen"
+  | "redOrange"
+  | "purplePink"
+  | "yellowGreen"
+  | "orangeRed"
 
 const speedValues: Record<SpeedOption, number> = {
   slow: 25,
@@ -28,7 +41,7 @@ const speedValues: Record<SpeedOption, number> = {
 
 const generateWalkerHue = (hueRange: HueRange): number => {
   let baseHue: number
-  
+
   switch (hueRange) {
     case "blueGreen":
       baseHue = 180 // Blue to green (180-240°)
@@ -48,20 +61,20 @@ const generateWalkerHue = (hueRange: HueRange): number => {
     default:
       baseHue = 180
   }
-  
+
   return Math.floor(Math.random() * 60) + baseHue // 60° analogous range
 }
 
 const WalkerLinearPage = () => {
   const walkers = useRef<Walker[]>([])
   const [selectedSpeed, setSelectedSpeed] = useState<SpeedOption>("medium")
-  const [selectedHueRange, setSelectedHueRange] = useState<HueRange>("blueGreen")
+  const [selectedHueRange, setSelectedHueRange] =
+    useState<HueRange>("blueGreen")
 
   const handleUpdate = (deltaTime: number) => {
     const size = getSize()
     walkers.current.forEach((walker) => {
-      handleEdgeCollision(walker, size.width, size.height, true)
-      updateWalkerMovement(walker)
+      updateWalkerMovement(walker, size.width, size.height)
       move(walker, deltaTime)
     })
   }
@@ -84,13 +97,14 @@ const WalkerLinearPage = () => {
     const hue = generateWalkerHue(selectedHueRange)
 
     const newWalker = createWalker(
-      position, 
-      speedValues[selectedSpeed], 
+      position,
+      speedValues[selectedSpeed],
       5, // radius
       40, // maxTailLength
+      true,
       hue
     )
-    
+
     walkers.current.push(newWalker)
   }
 
@@ -127,7 +141,7 @@ const WalkerLinearPage = () => {
               <Zap className="h-4 w-4" />
             </Button>
           </div>
-          
+
           <div className="flex gap-1">
             <Button
               variant={selectedHueRange === "blueGreen" ? "default" : "outline"}
@@ -148,7 +162,9 @@ const WalkerLinearPage = () => {
               <Flame className="h-4 w-4" />
             </Button>
             <Button
-              variant={selectedHueRange === "purplePink" ? "default" : "outline"}
+              variant={
+                selectedHueRange === "purplePink" ? "default" : "outline"
+              }
               size="sm"
               onClick={() => setSelectedHueRange("purplePink")}
               className="px-3"
@@ -157,7 +173,9 @@ const WalkerLinearPage = () => {
               <Flower2 className="h-4 w-4" />
             </Button>
             <Button
-              variant={selectedHueRange === "yellowGreen" ? "default" : "outline"}
+              variant={
+                selectedHueRange === "yellowGreen" ? "default" : "outline"
+              }
               size="sm"
               onClick={() => setSelectedHueRange("yellowGreen")}
               className="px-3"
@@ -175,7 +193,7 @@ const WalkerLinearPage = () => {
               <Cherry className="h-4 w-4" />
             </Button>
           </div>
-          
+
           <ModeToggle />
         </div>
       </div>
