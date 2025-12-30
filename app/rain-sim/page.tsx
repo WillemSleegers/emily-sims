@@ -76,7 +76,7 @@ const RainSimPage = () => {
       <div className="min-h-0 min-w-0 grow">
         <canvas
           ref={canvasRef}
-          className="border border-primary rounded w-full h-full"
+          className="border border-primary rounded"
           onMouseDown={handleClick}
         />
       </div>

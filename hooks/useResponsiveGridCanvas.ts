@@ -96,7 +96,7 @@ export const useResponsiveGridCanvas = (cellSize: number) => {
     if (canvasReady) {
       handleResize()
     }
-  }, [cellSize, handleResize, canvasReady])
+  }, [cellSize, handleResize])
 
   useEffect(() => {
     const canvas = canvasRef.current

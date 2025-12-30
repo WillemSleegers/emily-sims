@@ -200,7 +200,7 @@ const WalkerLinearPage = () => {
       <div className="min-h-0 min-w-0 grow">
         <canvas
           ref={canvasRef}
-          className="border border-primary rounded w-full h-full touch-none"
+          className="border border-primary rounded touch-none"
           onMouseDown={handleMouseDown}
         />
       </div>
