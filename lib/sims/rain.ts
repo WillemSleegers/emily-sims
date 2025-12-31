@@ -19,18 +19,15 @@ export type Raindrop = {
 }
 
 export const createRaindrop = (
-  canvasWidth: number,
-  canvasHeight: number
+  position: Vector2D,
+  velocity: Vector2D
 ): Raindrop => {
   const zMin = 0
   const zMax = 20
   const z = randomNumber(zMin, zMax)
   return {
-    position: createVector(
-      randomNumber(0, canvasWidth),
-      randomNumber(0, canvasHeight)
-    ),
-    velocity: createVector(0, 0),
+    position: position,
+    velocity: velocity,
     acceleration: createVector(0, 0),
 
     len: scale(z, zMin, zMax, 10, 20),
@@ -47,9 +44,10 @@ export const updateRaindropPosition = (
 
   raindrop.velocity = addVectors(raindrop.velocity, raindrop.acceleration)
   raindrop.velocity = limitVector(raindrop.velocity, raindrop.maxSpeed)
-  raindrop.velocity = scaleVector(raindrop.velocity, dt)
 
-  raindrop.position = addVectors(raindrop.position, raindrop.velocity)
+  const scaledVelocity = scaleVector(raindrop.velocity, dt)
+
+  raindrop.position = addVectors(raindrop.position, scaledVelocity)
 }
 
 export const handleRaindropEdgeCollisions = (
