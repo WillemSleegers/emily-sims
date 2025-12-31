@@ -86,9 +86,7 @@ export const useResponsiveGridCanvas = (cellSize: number) => {
       ctx.scale(dpr, dpr)
     }
 
-    if (newGridInfo.canvasWidth > 0 && newGridInfo.canvasHeight > 0) {
-      setCanvasReady(true)
-    }
+    setCanvasReady(newGridInfo.canvasWidth > 0 && newGridInfo.canvasHeight > 0)
   }, [calculateGridDimensions])
 
   // Re-run when cellSize changes

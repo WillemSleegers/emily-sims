@@ -1,6 +1,7 @@
 "use client"
 
-import { useRef, useEffect, useCallback, useState } from "react"
+import { useRef, useEffect, useState } from "react"
+import { setupCanvasForHighDPI } from "@/lib/canvas-utils"
 
 export type CanvasSize = {
   width: number
@@ -13,52 +14,40 @@ export const useResponsiveCanvas = () => {
 
   const [canvasReady, setCanvasReady] = useState(false)
 
-  const handleResize = useCallback(() => {
-    const canvas = canvasRef.current
-    if (!canvas?.parentElement) return
-
-    const parent = canvas.parentElement
+  const handleResize = (canvas: HTMLCanvasElement, parent: HTMLElement) => {
     const width = parent.clientWidth
     const height = parent.clientHeight
-
-    const dpr = window.devicePixelRatio
-
-    canvas.width = width * dpr
-    canvas.height = height * dpr
-    canvas.style.width = `${width}px`
-    canvas.style.height = `${height}px`
-
-    const ctx = canvas.getContext("2d")
-    if (ctx) {
-      ctx.setTransform(1, 0, 0, 1, 0, 0)
-      ctx.scale(dpr, dpr)
-    }
-
     canvasSize.current = { width, height }
 
-    if (width > 0 && height > 0 && ctx) {
-      setCanvasReady(true)
-    }
-  }, [])
+    setupCanvasForHighDPI(canvas, width, height)
+    setCanvasReady(width > 0 && height > 0)
+  }
 
   useEffect(() => {
     const canvas = canvasRef.current
-    if (!canvas?.parentElement) return
+    if (!canvas) return
 
-    const resizeObserver = new ResizeObserver(handleResize)
-    resizeObserver.observe(canvas.parentElement)
-    handleResize()
+    const parent = canvas.parentElement
+    if (!parent) return
+
+    const resizeObserver = new ResizeObserver(() =>
+      handleResize(canvas, parent)
+    )
+    resizeObserver.observe(parent)
+
+    handleResize(canvas, parent) // Run once for initial sizing
 
     return () => {
       resizeObserver.disconnect()
     }
   }, [handleResize])
 
-  const getContext = useCallback(() => {
+  // Convenience functions to access canvas properties without exposing refs
+  const getContext = () => {
     return canvasRef.current?.getContext("2d") || null
-  }, [])
+  }
 
-  const getSize = useCallback(() => canvasSize.current, [])
+  const getSize = () => canvasSize.current
 
   return {
     canvasRef,
