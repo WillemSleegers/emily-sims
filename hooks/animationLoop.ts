@@ -12,14 +12,11 @@ export const useAnimationLoop = (
 ) => {
   const { enabled = true } = options
 
-  // Track requestAnimationFrame ID so we can cancel it during cleanup
   const animationId = useRef(0)
-
-  // Store callback in ref to prevent stale closures in animation loop
   const callbackRef = useRef(callback)
   const previousTimestamp = useRef(0)
 
-  // Update callback ref whenever callback changes to avoid stale closures
+  // Update the ref whenever callback changes so we always call the latest version
   useEffect(() => {
     callbackRef.current = callback
   }, [callback])
@@ -28,39 +25,31 @@ export const useAnimationLoop = (
     if (!enabled) return
 
     const animate = (timestamp: number) => {
-      // Handle first frame
-      if (previousTimestamp.current === 0) {
-        previousTimestamp.current = timestamp
-        animationId.current = requestAnimationFrame(animate)
-        return
+      // Skip callback on first frame (no previous timestamp to calculate delta from)
+      if (previousTimestamp.current !== 0) {
+        // Clamp deltaTime to max 100ms to prevent physics explosions when tab loses focus
+        const deltaTime = Math.min(timestamp - previousTimestamp.current, 100)
+        callbackRef.current(deltaTime)
       }
 
-      // Use Math.max to ensure deltaTime is never negative (protects against timing quirks)
-      const deltaTime = Math.max(0, timestamp - previousTimestamp.current)
-
-      callbackRef.current(deltaTime)
+      // Store current timestamp for next frame's delta calculation
       previousTimestamp.current = timestamp
+
+      // Queue next frame to keep the loop running
       animationId.current = requestAnimationFrame(animate)
     }
 
-    // Initialize timing and start animation
+    // Reset timestamp
     previousTimestamp.current = 0
+
+    // Start the animation loop
     animationId.current = requestAnimationFrame(animate)
 
-    return () => {
-      if (animationId.current) {
-        cancelAnimationFrame(animationId.current)
-        animationId.current = 0
-      }
-    }
+    // Cleanup: cancel animation when effect re-runs or component unmounts
+    return () => cancelAnimationFrame(animationId.current)
   }, [enabled])
 
   return {
-    stop: () => {
-      if (animationId.current) {
-        cancelAnimationFrame(animationId.current)
-        animationId.current = 0
-      }
-    },
+    stop: () => cancelAnimationFrame(animationId.current),
   }
 }
