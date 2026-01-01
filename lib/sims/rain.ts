@@ -20,7 +20,8 @@ export type Raindrop = {
 
 export const createRaindrop = (
   position: Vector2D,
-  velocity: Vector2D
+  velocity: Vector2D,
+  color: string
 ): Raindrop => {
   const zMin = 0
   const zMax = 20
@@ -32,7 +33,7 @@ export const createRaindrop = (
 
     len: scale(z, zMin, zMax, 10, 20),
     maxSpeed: scale(z, zMin, zMax, 300, 200),
-    color: "white",
+    color: color,
   }
 }
 
