@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, MouseEvent } from "react"
+import { useRef, MouseEvent, useState } from "react"
 
 import { useCanvasAnimation } from "@/hooks/useAnimatedCanvas"
 import { cn } from "@/lib/utils"
@@ -14,11 +14,13 @@ import {
 } from "@/lib/sims/rain"
 
 import { addVectors, createVector, scaleVector } from "@/lib/utils-vector"
+import { ColorPicker } from "@/components/ui/color-picker"
 
 const GRAVITY = createVector(0, 9.8)
 
 const RainSimPage = () => {
   const raindrops = useRef<Raindrop[]>([])
+  const [selectedColor, setSelectedColor] = useState("#3b82f6")
 
   const handleUpdate = (
     deltaTime: number,
@@ -56,15 +58,18 @@ const RainSimPage = () => {
       y: event.nativeEvent.offsetY,
     }
 
-    const raindrop = createRaindrop(position, GRAVITY)
+    const raindrop = createRaindrop(position, GRAVITY, selectedColor)
     raindrops.current.push(raindrop)
   }
 
   return (
     <div className="h-screen p-4 flex flex-col gap-2">
-      <h1 className="font-semibold text-2xl whitespace-nowrap">
-        Emily&apos;s Rain Sim
-      </h1>
+      <div className="flex flex-wrap gap-x-4 gap-y-2 justify-between items-center">
+        <h1 className="font-semibold text-2xl whitespace-nowrap">
+          Emily&apos;s Rain Sim
+        </h1>
+        <ColorPicker value={selectedColor} onValueChange={setSelectedColor} />
+      </div>
       <div className="min-h-0 min-w-0 grow">
         <canvas
           ref={canvasRef}
