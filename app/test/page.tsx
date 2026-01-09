@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react"
 import { useCanvasAnimation } from "@/hooks/useAnimatedCanvas"
 
 import { FPSCounter } from "@/components/FPSCounter"
+import { BackButton } from "@/components/BackButton"
 
 import {
   Circle,
@@ -62,8 +63,11 @@ const TestPage = () => {
 
   return (
     <div className="h-screen p-4 flex flex-col gap-2">
-      <div className="flex flex-wrap gap-x-4 gap-y-2 justify-between">
-        <h1 className="font-semibold text-2xl whitespace-nowrap">Test</h1>
+      <div className="flex flex-wrap gap-x-4 gap-y-2 justify-between items-center">
+        <div className="flex items-center gap-2">
+          <BackButton />
+          <h1 className="font-semibold text-2xl whitespace-nowrap">Test</h1>
+        </div>
         <FPSCounter position="top-right" />
       </div>
       <div className="min-h-0 min-w-0 grow">
