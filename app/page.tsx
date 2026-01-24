@@ -37,6 +37,9 @@ const Home = () => {
         <li>
           <Link href="/quadtree">Quadtree Test</Link>
         </li>
+        <li>
+          <Link href="/resize-test">Resize Test</Link>
+        </li>
       </ul>
     </div>
   )
