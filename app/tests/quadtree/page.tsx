@@ -86,7 +86,7 @@ const QuadtreePage = () => {
     <div className="h-screen p-4 flex flex-col gap-2">
       <div className="flex flex-wrap gap-x-4 gap-y-2 justify-between">
         <h1 className="font-semibold text-2xl whitespace-nowrap">Test</h1>
-        <FPSCounter position="top-right" />
+        <FPSCounter />
       </div>
       <div className="min-h-0 min-w-0 grow">
         <canvas

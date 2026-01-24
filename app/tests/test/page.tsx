@@ -68,13 +68,10 @@ const TestPage = () => {
           <BackButton />
           <h1 className="font-semibold text-2xl whitespace-nowrap">Test</h1>
         </div>
-        <FPSCounter position="top-right" />
+        <FPSCounter />
       </div>
       <div className="min-h-0 min-w-0 grow">
-        <canvas
-          ref={canvasRef}
-          className="border border-primary rounded"
-        />
+        <canvas ref={canvasRef} className="border border-primary rounded" />
       </div>
     </div>
   )
