@@ -1,35 +1,26 @@
 import { useState, useEffect, useRef } from "react"
 
 type FPSCounterProps = {
-  position?: "top-left" | "top-right" | "bottom-left" | "bottom-right"
   updateInterval?: number
   sampleSize?: number
-  className?: string
   showDetails?: boolean
-  backgroundColor?: string
   visible?: boolean
 }
 
 /**
- * Displays real-time FPS counter in any screen corner.
+ * Displays real-time FPS counter.
  * Color-coded performance: green (55+), yellow (45+), orange (30+), red (<30).
  *
- * @param position - Corner position for display
  * @param updateInterval - Update interval in milliseconds
  * @param sampleSize - Number of frames to average over
- * @param className - Additional CSS classes
  * @param showDetails - Show min/max/avg statistics
- * @param backgroundColor - Custom background color
  * @param visible - Component visibility
  * @returns JSX element or null if not visible
  */
 export const FPSCounter = ({
-  position = "top-left",
   updateInterval = 500,
   sampleSize = 60,
-  className = "",
   showDetails = false,
-  backgroundColor = "rgba(0, 0, 0, 0.8)",
   visible = true,
 }: FPSCounterProps) => {
   const [fps, setFps] = useState<number>(0)
@@ -93,63 +84,26 @@ export const FPSCounter = ({
     }
   }, [updateInterval, sampleSize])
 
-  const getPositionStyles = (): React.CSSProperties => {
-    const baseStyles: React.CSSProperties = {
-      position: "fixed",
-      zIndex: 9999,
-      padding: "8px 12px",
-      fontSize: "12px",
-      fontFamily: "monospace",
-      fontWeight: "bold",
-      backgroundColor,
-      borderRadius: "4px",
-      backdropFilter: "blur(4px)",
-      userSelect: "none",
-      pointerEvents: "none",
-    }
-
-    const offset = "16px"
-    switch (position) {
-      case "top-left":
-        return { ...baseStyles, top: offset, left: offset }
-      case "top-right":
-        return { ...baseStyles, top: offset, right: offset }
-      case "bottom-left":
-        return { ...baseStyles, bottom: offset, left: offset }
-      case "bottom-right":
-        return { ...baseStyles, bottom: offset, right: offset }
-      default:
-        return { ...baseStyles, top: offset, left: offset }
-    }
-  }
-
   const getFpsColor = (): string => {
-    if (fps >= 55) return "#00ff00" // Green
-    if (fps >= 45) return "#ffff00" // Yellow
-    if (fps >= 30) return "#ff8800" // Orange
-    return "#ff0000" // Red
+    if (fps >= 55) return "#00ff00"
+    if (fps >= 45) return "#ffff00"
+    if (fps >= 30) return "#ff8800"
+    return "#ff0000"
   }
 
   if (!visible) return null
 
   return (
     <div
-      style={{ ...getPositionStyles(), color: getFpsColor() }}
-      className={className}
+      className="px-3 py-1 rounded font-mono text-sm font-bold"
+      style={{ color: getFpsColor() }}
     >
-      <div style={{ lineHeight: "1.2" }}>
-        <div style={{ fontSize: "14px", fontWeight: "bold" }}>{fps} FPS</div>
-        {showDetails && (
-          <>
-            <div style={{ fontSize: "10px", opacity: 0.8, marginTop: "2px" }}>
-              Avg: {avgFps} | Min: {minFps} | Max: {maxFps}
-            </div>
-            <div style={{ fontSize: "10px", opacity: 0.6 }}>
-              Samples: {frameTimesRef.current.length}/{sampleSize}
-            </div>
-          </>
-        )}
-      </div>
+      {fps} FPS
+      {showDetails && (
+        <div style={{ fontSize: "10px", opacity: 0.8 }}>
+          Avg: {avgFps} | Min: {minFps} | Max: {maxFps}
+        </div>
+      )}
     </div>
   )
 }
