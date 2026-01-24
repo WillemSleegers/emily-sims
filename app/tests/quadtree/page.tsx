@@ -10,7 +10,7 @@ import {
   Circle,
   handleCircleEdgeCollisions,
   updateCirclePosition,
-} from "@/lib/sims/test"
+} from "@/lib/sims/circle"
 import { createVector } from "@/lib/utils-vector"
 
 import {
@@ -22,10 +22,14 @@ import {
   drawQuadtree,
   drawPoints,
 } from "@/lib/quadtree"
+import { PageNav } from "@/components/page-nav"
+import { cn } from "@/lib/utils"
+import { FullScreen, useFullScreenHandle } from "react-full-screen"
 
 const QuadtreePage = () => {
   const circles = useRef<Circle[]>([])
   const quadtree = useRef<QuadtreeNode>(undefined)
+  const fullscreenHandle = useFullScreenHandle()
 
   // Move the circles around and have them bounce off of the edges
   const handleUpdate = (
@@ -83,17 +87,16 @@ const QuadtreePage = () => {
   }
 
   return (
-    <div className="h-screen p-4 flex flex-col gap-2">
-      <div className="flex flex-wrap gap-x-4 gap-y-2 justify-between">
-        <h1 className="font-semibold text-2xl whitespace-nowrap">Test</h1>
-        <FPSCounter />
-      </div>
-      <div className="min-h-0 min-w-0 grow">
-        <canvas
-          ref={canvasRef}
-          className="border border-primary rounded"
-          onClick={handleClick}
-        />
+    <div className="p-4 flex flex-col gap-2">
+      <PageNav
+        title="Quadtree Test"
+        fullscreenHandle={fullscreenHandle}
+        showFPS
+      />
+      <div className={cn("min-h-0 grow border-2 border-primary rounded")}>
+        <FullScreen handle={fullscreenHandle} className="h-full">
+          <canvas ref={canvasRef} onClick={handleClick} />
+        </FullScreen>
       </div>
     </div>
   )

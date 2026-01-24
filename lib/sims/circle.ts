@@ -8,13 +8,17 @@ export type Circle = {
   colorStroke?: string
 }
 
-export const createCircle = (position: Vector2D, velocity: Vector2D) => {
+export const createCircle = (
+  position: Vector2D,
+  velocity: Vector2D,
+  color: string
+) => {
   return {
     position: position,
     velocity: velocity,
     radius: 25,
-    colorFill: "white",
-    colorStroke: "black",
+    colorFill: color,
+    colorStroke: "#016630",
   }
 }
 
@@ -25,19 +29,19 @@ export const handleCircleEdgeCollisions = (
 ): void => {
   // Check left and right edges
   if (circle.position.x - circle.radius <= 0) {
-    circle.position.x = circle.radius // Prevent overlap
+    circle.position.x = circle.radius // Prevent overlap with the edge
     circle.velocity.x = Math.abs(circle.velocity.x) // Bounce right
   } else if (circle.position.x + circle.radius >= canvasWidth) {
-    circle.position.x = canvasWidth - circle.radius // Prevent overlap
+    circle.position.x = canvasWidth - circle.radius // Prevent overlap with the edge
     circle.velocity.x = -Math.abs(circle.velocity.x) // Bounce left
   }
 
   // Check top and bottom edges
   if (circle.position.y - circle.radius <= 0) {
-    circle.position.y = circle.radius // Prevent overlap
+    circle.position.y = circle.radius // Prevent overlap with the edge
     circle.velocity.y = Math.abs(circle.velocity.y) // Bounce down
   } else if (circle.position.y + circle.radius >= canvasHeight) {
-    circle.position.y = canvasHeight - circle.radius // Prevent overlap
+    circle.position.y = canvasHeight - circle.radius // Prevent overlap with the edge
     circle.velocity.y = -Math.abs(circle.velocity.y) // Bounce up
   }
 }

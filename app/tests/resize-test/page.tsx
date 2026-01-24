@@ -45,7 +45,7 @@ const ResizeTestPage = () => {
   }, [canvasReady, canvasRef, getSize])
 
   return (
-    <div className="h-screen p-4 flex flex-col gap-2">
+    <div className="h-dvh p-4 flex flex-col gap-2">
       <PageNav
         title="Resize Test"
         fullscreenHandle={fullscreenHandle}
