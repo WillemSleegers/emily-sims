@@ -29,16 +29,16 @@ const Home = () => {
       <h2>Testing</h2>
       <ul className="space-y-3 sm:space-y-4">
         <li>
-          <Link href="/test">Test</Link>
+          <Link href="/tests/test">Test</Link>
         </li>
         <li>
-          <Link href="/grid">Grid Test</Link>
+          <Link href="/tests/grid">Grid Test</Link>
         </li>
         <li>
-          <Link href="/quadtree">Quadtree Test</Link>
+          <Link href="/tests/quadtree">Quadtree Test</Link>
         </li>
         <li>
-          <Link href="/resize-test">Resize Test</Link>
+          <Link href="/tests/resize-test">Resize Test</Link>
         </li>
       </ul>
     </div>

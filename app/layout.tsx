@@ -4,8 +4,8 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 
 export const metadata: Metadata = {
-  title: "Emily Games",
-  description: "Games for Emily",
+  title: "Emily Sims",
+  description: "Fun Simulations for Emily",
 }
 
 export default function RootLayout({
