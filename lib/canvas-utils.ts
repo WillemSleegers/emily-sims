@@ -7,7 +7,7 @@
 export function setupCanvasForHighDPI(
   canvas: HTMLCanvasElement,
   width: number,
-  height: number
+  height: number,
 ) {
   const dpr = window.devicePixelRatio
 

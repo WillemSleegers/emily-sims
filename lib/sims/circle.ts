@@ -11,21 +11,20 @@ export type Circle = {
 export const createCircle = (
   position: Vector2D,
   velocity: Vector2D,
-  color: string
+  color: string,
 ) => {
   return {
     position: position,
     velocity: velocity,
     radius: 25,
     colorFill: color,
-    colorStroke: "#016630",
   }
 }
 
 export const handleCircleEdgeCollisions = (
   circle: Circle,
   canvasWidth: number,
-  canvasHeight: number
+  canvasHeight: number,
 ): void => {
   // Check left and right edges
   if (circle.position.x - circle.radius <= 0) {
@@ -48,7 +47,7 @@ export const handleCircleEdgeCollisions = (
 
 export const updateCirclePosition = (
   circle: Circle,
-  deltaTime: number
+  deltaTime: number,
 ): void => {
   const dt = deltaTime / 1000 // Convert to seconds
 
@@ -59,7 +58,7 @@ export const updateCirclePosition = (
 export const drawCircle = (
   ctx: CanvasRenderingContext2D,
   circle: Circle,
-  lineWidth = 1
+  lineWidth = 1,
 ) => {
   ctx.beginPath()
   ctx.arc(circle.position.x, circle.position.y, circle.radius, 0, 2 * Math.PI)

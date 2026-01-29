@@ -84,19 +84,19 @@ export const FPSCounter = ({
     }
   }, [updateInterval, sampleSize])
 
+  // Light mode uses darker shades for contrast on white; dark mode uses bright neon
   const getFpsColor = (): string => {
-    if (fps >= 55) return "#00ff00"
-    if (fps >= 45) return "#ffff00"
-    if (fps >= 30) return "#ff8800"
-    return "#ff0000"
+    if (fps >= 55) return "text-green-700 dark:text-green-400"
+    if (fps >= 45) return "text-yellow-600 dark:text-yellow-300"
+    if (fps >= 30) return "text-orange-600 dark:text-orange-400"
+    return "text-red-600 dark:text-red-500"
   }
 
   if (!visible) return null
 
   return (
     <div
-      className="px-3 py-1 rounded font-mono text-sm font-bold"
-      style={{ color: getFpsColor() }}
+      className={`px-3 py-1 rounded font-mono text-sm font-bold ${getFpsColor()}`}
     >
       {fps} FPS
       {showDetails && (

@@ -2,9 +2,8 @@
 
 import { CanvasSize, useResponsiveCanvas } from "@/hooks/useResponsiveCanvas"
 import { useEffect } from "react"
-import { PageNav } from "@/components/page-nav"
-import { FullScreen, useFullScreenHandle } from "react-full-screen"
-import { cn } from "@/lib/utils"
+import { SimLayout } from "@/components/sim-layout"
+import { Canvas } from "@/components/canvas"
 
 const drawDimensions = (ctx: CanvasRenderingContext2D, size: CanvasSize) => {
   // Draw dimensions text in the center
@@ -19,7 +18,6 @@ const drawDimensions = (ctx: CanvasRenderingContext2D, size: CanvasSize) => {
 
 const ResizeTestPage = () => {
   const { canvasRef, canvasReady, getSize } = useResponsiveCanvas()
-  const fullscreenHandle = useFullScreenHandle()
 
   // Draw the dimensions on the canvas whenever it resizes
   useEffect(() => {
@@ -45,18 +43,9 @@ const ResizeTestPage = () => {
   }, [canvasReady, canvasRef, getSize])
 
   return (
-    <div className="h-dvh p-4 flex flex-col gap-2">
-      <PageNav
-        title="Resize Test"
-        fullscreenHandle={fullscreenHandle}
-        showFPS
-      />
-      <div className={cn("min-h-0 grow border-2 border-primary rounded")}>
-        <FullScreen handle={fullscreenHandle} className="h-full">
-          <canvas ref={canvasRef} />
-        </FullScreen>
-      </div>
-    </div>
+    <SimLayout title="Resize Test" fullscreen showFPS>
+      <Canvas ref={canvasRef} />
+    </SimLayout>
   )
 }
 
