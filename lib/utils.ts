@@ -19,7 +19,7 @@ export const scale = (
   fromMin: number,
   fromMax: number,
   toMin: number,
-  toMax: number
+  toMax: number,
 ): number => {
   return ((value - fromMin) / (fromMax - fromMin)) * (toMax - toMin) + toMin
 }
@@ -45,7 +45,20 @@ export const normalize = (value: number, min: number, max: number): number => {
 export const denormalize = (
   value: number,
   min: number,
-  max: number
+  max: number,
 ): number => {
   return scale(value, 0, 1, min, max)
+}
+
+/**
+ * Constrain a number
+ * @param value - Any numeric value
+ * @param min - The minimum number to contrain by
+ * @param max - The maximum number to contrain by
+ * @returns The constrained number
+ */
+export const constrain = (value: number, min: number, max: number): number => {
+  if (value < min) return min
+  if (value > max) return max
+  return value
 }

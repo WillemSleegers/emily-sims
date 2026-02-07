@@ -21,9 +21,11 @@ const Home = () => {
         <li>
           <Link href="/game-of-life">Game of Life</Link>
         </li>
-
         <li>
           <Link href="/walker-linear">Walker (linear)</Link>
+        </li>
+        <li>
+          <Link href="/attraction">Attraction</Link>
         </li>
       </ul>
       <h2>Testing</h2>

@@ -17,7 +17,7 @@ export const createVector = (x: number, y: number): Vector2D => ({ x, y })
  */
 export const createVectorFromAngle = (
   angle: number,
-  magnitude: number
+  magnitude: number,
 ): Vector2D => ({
   x: Math.cos((angle * Math.PI) / 180) * magnitude,
   y: Math.sin((angle * Math.PI) / 180) * magnitude,
@@ -35,7 +35,7 @@ export const createUnitVector = (angle: number): Vector2D =>
  */
 export const createVectorBetween = (
   from: Vector2D,
-  to: Vector2D
+  to: Vector2D,
 ): Vector2D => ({
   x: to.x - from.x,
   y: to.y - from.y,
@@ -54,7 +54,7 @@ export const vectorMagnitude = (vector: Vector2D): number =>
  */
 export const setVectorMagnitude = (
   vector: Vector2D,
-  newMagnitude: number
+  newMagnitude: number,
 ): Vector2D => {
   const normalized = normalizeVector(vector)
   return scaleVector(normalized, newMagnitude)
@@ -113,15 +113,19 @@ export const vectorToAngle = (vector: Vector2D): number =>
 /**
  * Limits a vector to a maximum magnitude
  */
-export const limitVector = (
+export const constrainVector = (
   vector: Vector2D,
-  maxMagnitude: number
+  minMagnitude: number,
+  maxMagnitude: number,
 ): Vector2D => {
-  const mag = vectorMagnitude(vector)
-  if (mag > maxMagnitude) {
-    return scaleVector(normalizeVector(vector), maxMagnitude)
+  let mag = vectorMagnitude(vector)
+  if (mag < minMagnitude) {
+    mag = minMagnitude
   }
-  return vector
+  if (mag > maxMagnitude) {
+    mag = maxMagnitude
+  }
+  return scaleVector(normalizeVector(vector), mag)
 }
 
 /**

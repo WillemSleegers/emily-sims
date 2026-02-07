@@ -1,8 +1,18 @@
-import { Vector2D } from "@/lib/utils-vector"
+import {
+  addVectors,
+  createVector,
+  scaleVector,
+  setVectorMagnitude,
+  subtractVectors,
+  Vector2D,
+  vectorMagnitude,
+} from "@/lib/utils-vector"
+import { constrain } from "../utils"
 
 export type Circle = {
   position: Vector2D
   velocity: Vector2D
+  acceleration: Vector2D
   radius: number
   colorFill: string
   colorStroke?: string
@@ -16,8 +26,26 @@ export const createCircle = (
   return {
     position: position,
     velocity: velocity,
+    acceleration: createVector(0, 0),
     radius: 25,
     colorFill: color,
+  }
+}
+
+export const handleAttraction = (circle: Circle, circles: Circle[]) => {
+  let force
+  let d
+  let strength
+  for (const c of circles) {
+    if (c != circle) {
+      force = subtractVectors(c.position, circle.position)
+      d = constrain(vectorMagnitude(force), 100, 1000)
+      strength = 20000 / (d * d)
+
+      force = setVectorMagnitude(force, strength)
+      applyForce(circle, force)
+      console.log(strength)
+    }
   }
 }
 
@@ -45,14 +73,22 @@ export const handleCircleEdgeCollisions = (
   }
 }
 
+export const applyForce = (circle: Circle, force: Vector2D) => {
+  circle.acceleration = addVectors(circle.acceleration, force)
+}
+
 export const updateCirclePosition = (
   circle: Circle,
   deltaTime: number,
 ): void => {
   const dt = deltaTime / 1000 // Convert to seconds
 
-  circle.position.x += circle.velocity.x * dt
-  circle.position.y += circle.velocity.y * dt
+  circle.velocity = addVectors(circle.velocity, circle.acceleration)
+  circle.acceleration = scaleVector(circle.velocity, 0)
+  circle.position = addVectors(
+    circle.position,
+    scaleVector(circle.velocity, dt),
+  )
 }
 
 export const drawCircle = (
