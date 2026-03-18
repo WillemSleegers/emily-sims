@@ -23,7 +23,7 @@ import { randomNumber } from "@/lib/random/random"
 const CIRCLE_SPEED = 50
 const CIRCLE_COLOR = "#00a63e"
 
-const TestPage = () => {
+const AttractionPage = () => {
   const circles = useRef<Circle[]>([])
 
   // Move the circles around and have them bounce off of the edges
@@ -31,7 +31,7 @@ const TestPage = () => {
     deltaTime: number,
     size: { width: number; height: number },
   ) => {
-    circles.current.forEach((circle, i) => {
+    circles.current.forEach((circle) => {
       handleAttraction(circle, circles.current)
       updateCirclePosition(circle, deltaTime)
       handleCircleEdgeCollisions(circle, size.width, size.height)
@@ -66,4 +66,4 @@ const TestPage = () => {
   )
 }
 
-export default TestPage
+export default AttractionPage
