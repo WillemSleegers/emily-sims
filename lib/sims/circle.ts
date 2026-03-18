@@ -1,5 +1,6 @@
 import {
   addVectors,
+  constrainVector,
   createVector,
   scaleVector,
   setVectorMagnitude,
@@ -40,11 +41,10 @@ export const handleAttraction = (circle: Circle, circles: Circle[]) => {
     if (c != circle) {
       force = subtractVectors(c.position, circle.position)
       d = constrain(vectorMagnitude(force), 100, 1000)
-      strength = 20000 / (d * d)
+      strength = 5000000 / (d * d)
 
       force = setVectorMagnitude(force, strength)
       applyForce(circle, force)
-      console.log(strength)
     }
   }
 }
@@ -83,12 +83,21 @@ export const updateCirclePosition = (
 ): void => {
   const dt = deltaTime / 1000 // Convert to seconds
 
-  circle.velocity = addVectors(circle.velocity, circle.acceleration)
-  circle.acceleration = scaleVector(circle.velocity, 0)
-  circle.position = addVectors(
-    circle.position,
-    scaleVector(circle.velocity, dt),
-  )
+  let velocity = circle.velocity
+  let acceleration = circle.acceleration
+  let position = circle.position
+
+  acceleration = scaleVector(acceleration, dt)
+
+  velocity = addVectors(velocity, acceleration)
+  velocity = constrainVector(velocity, 0, 500)
+  position = addVectors(position, scaleVector(velocity, dt))
+
+  acceleration = createVector(0, 0) // Reset acceleration
+
+  circle.velocity = velocity
+  circle.acceleration = acceleration
+  circle.position = position
 }
 
 export const drawCircle = (
