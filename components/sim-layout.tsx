@@ -34,13 +34,13 @@ export const SimLayout = ({
   return (
     <div
       className={cn(
-        "h-dvh flex flex-col transition-all duration-300 ease-in-out",
+        "h-dvh flex flex-col transition-[padding,gap] duration-300 ease-in-out",
         isFullscreen ? "p-0 gap-0" : "p-4 gap-2",
       )}
     >
       <nav
         className={cn(
-          "flex items-center gap-4 justify-between flex-wrap overflow-hidden transition-all duration-300 ease-in-out",
+          "flex items-center gap-4 justify-between flex-wrap overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out",
           isFullscreen ? "max-h-0 opacity-0" : "max-h-20 opacity-100",
         )}
       >
@@ -73,7 +73,7 @@ export const SimLayout = ({
 
       <div
         className={cn(
-          "min-h-0 grow transition-all duration-300 ease-in-out",
+          "min-h-0 grow transition-[border-color,border-radius] duration-300 ease-in-out",
           isFullscreen
             ? "border-transparent rounded-none"
             : "border border-foreground rounded",

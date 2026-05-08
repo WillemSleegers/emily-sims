@@ -1,7 +1,6 @@
 "use client"
 
 import { CanvasSize, useResponsiveCanvas } from "@/hooks/useResponsiveCanvas"
-import { useEffect } from "react"
 import { SimLayout } from "@/components/sim-layout"
 import { Canvas } from "@/components/canvas"
 
@@ -17,33 +16,10 @@ const drawDimensions = (ctx: CanvasRenderingContext2D, size: CanvasSize) => {
 }
 
 const ResizeTestPage = () => {
-  const { canvasRef, canvasReady, getSize } = useResponsiveCanvas()
-
-  // Draw the dimensions on the canvas whenever it resizes
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-
-    const ctx = canvas.getContext("2d")
-    if (!ctx) return
-
-    // Set up a ResizeObserver to redraw when canvas resizes
-    const parent = canvas.parentElement
-    if (!parent) return
-
-    const resizeObserver = new ResizeObserver(() => {
-      const size = getSize()
-      drawDimensions(ctx, size)
-    })
-    resizeObserver.observe(parent)
-
-    return () => {
-      resizeObserver.disconnect()
-    }
-  }, [canvasReady, canvasRef, getSize])
+  const { canvasRef } = useResponsiveCanvas({ onResize: drawDimensions })
 
   return (
-    <SimLayout title="Resize Test" fullscreen showFPS>
+    <SimLayout title="Resize Test" fullscreen>
       <Canvas ref={canvasRef} />
     </SimLayout>
   )
