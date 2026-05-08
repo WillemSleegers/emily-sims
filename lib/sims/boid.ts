@@ -1,7 +1,7 @@
 import {
   addVectors,
   divideVector,
-  limitVector,
+  constrainVector,
   scaleVector,
   setVectorMagnitude,
   subtractVectors,
@@ -275,6 +275,6 @@ export const applyForce = (
 ): void => {
   boid.velocity = addVectors(boid.velocity, force)
   if (maxSpeed !== undefined) {
-    boid.velocity = limitVector(boid.velocity, maxSpeed)
+    boid.velocity = constrainVector(boid.velocity, 0, maxSpeed)
   }
 }

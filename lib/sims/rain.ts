@@ -4,7 +4,7 @@ import {
   Vector2D,
   addVectors,
   createVector,
-  limitVector,
+  constrainVector,
   scaleVector,
 } from "../utils-vector"
 
@@ -44,7 +44,7 @@ export const updateRaindropPosition = (
   const dt = deltaTime / 1000
 
   raindrop.velocity = addVectors(raindrop.velocity, raindrop.acceleration)
-  raindrop.velocity = limitVector(raindrop.velocity, raindrop.maxSpeed)
+  raindrop.velocity = constrainVector(raindrop.velocity, 0, raindrop.maxSpeed)
 
   const scaledVelocity = scaleVector(raindrop.velocity, dt)
 
