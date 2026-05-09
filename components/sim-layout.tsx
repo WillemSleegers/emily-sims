@@ -15,6 +15,9 @@ type SimLayoutProps = {
   controls?: ReactNode
   fullscreen?: boolean
   showFPS?: boolean
+  // Drop the border around the content. Useful for grid-based sims where
+  // a rounded frame doesn't fit the canvas's square pixel edges.
+  borderless?: boolean
 }
 
 export const SimLayout = ({
@@ -23,6 +26,7 @@ export const SimLayout = ({
   controls,
   fullscreen = false,
   showFPS = false,
+  borderless = false,
 }: SimLayoutProps) => {
   const { theme, setTheme } = useTheme()
   const { isFullscreen, toggleFullscreen } = useAppFullscreen()
@@ -74,7 +78,7 @@ export const SimLayout = ({
       <div
         className={cn(
           "min-h-0 grow transition-[border-color,border-radius] duration-300 ease-in-out",
-          isFullscreen
+          isFullscreen || borderless
             ? "border-transparent rounded-none"
             : "border border-foreground rounded",
         )}
