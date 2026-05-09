@@ -1,4 +1,5 @@
 import { useRef, useEffect, useCallback, useState } from "react"
+import { setupCanvasForHighDPI } from "@/lib/utils-canvas"
 
 export type Cell = {
   x: number
@@ -14,7 +15,16 @@ export type GridInfo = {
   canvasHeight: number
 }
 
-export const useResponsiveGridCanvas = (cellSize: number) => {
+type UseResponsiveGridCanvasOptions = {
+  // Called after the canvas has been resized and prepared for high-DPI drawing.
+  // Useful for redrawing on resize without managing a separate ResizeObserver.
+  onResize?: (ctx: CanvasRenderingContext2D, gridInfo: GridInfo) => void
+}
+
+export const useResponsiveGridCanvas = (
+  cellSize: number,
+  options: UseResponsiveGridCanvasOptions = {},
+) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   const gridInfo = useRef<GridInfo>({
@@ -26,6 +36,11 @@ export const useResponsiveGridCanvas = (cellSize: number) => {
   })
 
   const [canvasReady, setCanvasReady] = useState(false)
+
+  // Stash the latest onResize in a ref so consumers don't need to memoize it,
+  // and so the effect below doesn't re-subscribe the observer on every render.
+  const onResizeRef = useRef(options.onResize)
+  onResizeRef.current = options.onResize
 
   const calculateGridDimensions = useCallback(
     (containerWidth: number, containerHeight: number): GridInfo => {
@@ -72,21 +87,20 @@ export const useResponsiveGridCanvas = (cellSize: number) => {
 
     gridInfo.current = newGridInfo
 
-    const dpr = window.devicePixelRatio
+    setupCanvasForHighDPI(
+      canvas,
+      newGridInfo.canvasWidth,
+      newGridInfo.canvasHeight,
+    )
 
-    // Set canvas dimensions
-    canvas.width = newGridInfo.canvasWidth * dpr
-    canvas.height = newGridInfo.canvasHeight * dpr
-    canvas.style.width = `${newGridInfo.canvasWidth}px`
-    canvas.style.height = `${newGridInfo.canvasHeight}px`
+    const ready = newGridInfo.canvasWidth > 0 && newGridInfo.canvasHeight > 0
+    setCanvasReady(ready)
 
-    const ctx = canvas.getContext("2d")
-    if (ctx) {
-      ctx.setTransform(1, 0, 0, 1, 0, 0)
-      ctx.scale(dpr, dpr)
+    // Run after high-DPI setup so the callback draws onto a freshly sized canvas.
+    if (ready) {
+      const ctx = canvas.getContext("2d")
+      if (ctx) onResizeRef.current?.(ctx, newGridInfo)
     }
-
-    setCanvasReady(newGridInfo.canvasWidth > 0 && newGridInfo.canvasHeight > 0)
   }, [calculateGridDimensions])
 
   // Re-run when cellSize changes

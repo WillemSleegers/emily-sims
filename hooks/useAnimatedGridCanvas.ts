@@ -10,11 +10,10 @@ export const useAnimatedGridCanvas = (
   cellSize: number,
   onUpdate?: (deltaTime: number, gridInfo: GridInfo) => void,
   onDraw?: (ctx: CanvasRenderingContext2D, gridInfo: GridInfo) => void,
-  fps = 10
+  fps = 10,
 ) => {
-  const gridCanvas = useResponsiveGridCanvas(cellSize)
-  const { canvasReady, getContext, getGridInfo } = gridCanvas
-
+  // Stash latest callbacks in refs so the resize and animation paths
+  // always see the current versions without re-subscribing observers.
   const drawCallbackRef = useRef(onDraw)
   const updateCallbackRef = useRef(onUpdate)
   const accumulatedTime = useRef(0)
@@ -24,20 +23,12 @@ export const useAnimatedGridCanvas = (
     updateCallbackRef.current = onUpdate
   }, [onDraw, onUpdate])
 
-  const forceDraw = useCallback(() => {
-    if (!canvasReady) return
-
-    const ctx = getContext()
-    const gridInfo = getGridInfo()
-
-    if (!ctx || !drawCallbackRef.current) return
-
-    drawCallbackRef.current(ctx, gridInfo)
-  }, [canvasReady, getContext, getGridInfo])
-
-  useEffect(() => {
-    if (canvasReady) forceDraw()
-  }, [canvasReady, forceDraw])
+  // Redraw on resize so static-between-ticks sims (like Game of Life)
+  // re-render their last frame at the new dimensions immediately.
+  const gridCanvas = useResponsiveGridCanvas(cellSize, {
+    onResize: (ctx, gridInfo) => drawCallbackRef.current?.(ctx, gridInfo),
+  })
+  const { canvasReady, getContext, getGridInfo } = gridCanvas
 
   const targetInterval = 1000 / fps
 
@@ -60,8 +51,16 @@ export const useAnimatedGridCanvas = (
         drawCallbackRef.current?.(ctx, gridInfo)
       }
     },
-    { enabled: canvasReady }
+    { enabled: canvasReady },
   )
+
+  // Trigger a draw outside the animation loop. Useful for redrawing
+  // immediately in response to user input (e.g. clicks adding cells).
+  const forceDraw = useCallback(() => {
+    const ctx = getContext()
+    if (!ctx) return
+    drawCallbackRef.current?.(ctx, getGridInfo())
+  }, [getContext, getGridInfo])
 
   return {
     ...gridCanvas,
