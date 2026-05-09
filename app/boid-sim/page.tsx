@@ -1,8 +1,12 @@
 "use client"
 
-import { useRef, MouseEvent, useEffect } from "react"
+import { useEffect, useRef, MouseEvent } from "react"
 
+import { CanvasSize } from "@/hooks/useResponsiveCanvas"
 import { useAnimatedCanvas } from "@/hooks/useAnimatedCanvas"
+
+import { SimLayout } from "@/components/sim-layout"
+import { Canvas } from "@/components/canvas"
 
 import { randomNumber } from "@/lib/random/random"
 import {
@@ -17,67 +21,50 @@ import { createVector, createVectorFromAngle } from "@/lib/utils-vector"
 const BoidPage = () => {
   const boids = useRef<Boid[]>([])
 
-  const handleUpdate = (deltaTime: number) => {
-    const size = getSize()
-
+  const handleUpdate = (deltaTime: number, size: CanvasSize) => {
     boids.current.forEach((boid) => {
       updateBoid(boid, deltaTime * 0.01)
       handleBoidEdgeCollisions(boid, size.width, size.height)
     })
   }
 
-  const handleDraw = (ctx: CanvasRenderingContext2D) => {
-    const size = getSize()
-
+  const handleDraw = (ctx: CanvasRenderingContext2D, size: CanvasSize) => {
     ctx.clearRect(0, 0, size.width, size.height)
-
-    boids.current.forEach((boid) => {
-      drawBoid(ctx, boid)
-    })
+    boids.current.forEach((boid) => drawBoid(ctx, boid))
   }
 
-  const { canvasRef, getSize, canvasReady } = useAnimatedCanvas(
+  const { canvasRef, canvasReady, getSize } = useAnimatedCanvas(
     handleUpdate,
-    handleDraw
+    handleDraw,
   )
 
-  const handleMouseDown = (event: MouseEvent<HTMLCanvasElement>) => {
-    const position = createVector(
-      event.nativeEvent.offsetX,
-      event.nativeEvent.offsetY
-    )
-    const velocity = createVectorFromAngle(randomNumber(0, 360), 25)
-    const boid = createBoid(position, velocity)
-    boids.current.push(boid)
-  }
-
-  // Setup
+  // Seed with one boid once the canvas has dimensions.
   useEffect(() => {
     if (!canvasReady) return
 
     const size = getSize()
     const position = createVector(
       randomNumber(0, size.width),
-      randomNumber(0, size.height)
+      randomNumber(0, size.height),
     )
     const velocity = createVectorFromAngle(randomNumber(0, 360), 25)
-    const boid = createBoid(position, velocity)
-    boids.current.push(boid)
+    boids.current.push(createBoid(position, velocity))
   }, [canvasReady, getSize])
 
+  // Click anywhere to add a new boid at that position.
+  const handleMouseDown = (event: MouseEvent<HTMLCanvasElement>) => {
+    const position = createVector(
+      event.nativeEvent.offsetX,
+      event.nativeEvent.offsetY,
+    )
+    const velocity = createVectorFromAngle(randomNumber(0, 360), 25)
+    boids.current.push(createBoid(position, velocity))
+  }
+
   return (
-    <div className="h-dvh p-4 flex flex-col gap-2 select-none">
-      <div className="flex flex-wrap gap-x-4 gap-y-2 justify-between">
-        <h1 className="font-semibold text-2xl whitespace-nowrap">Boid</h1>
-      </div>
-      <div className="min-h-0 min-w-0 grow">
-        <canvas
-          ref={canvasRef}
-          className="border border-primary rounded touch-none"
-          onMouseDown={handleMouseDown}
-        />
-      </div>
-    </div>
+    <SimLayout title="Boid" fullscreen showFPS>
+      <Canvas ref={canvasRef} onMouseDown={handleMouseDown} />
+    </SimLayout>
   )
 }
 

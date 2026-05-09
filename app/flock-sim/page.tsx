@@ -1,5 +1,8 @@
 "use client"
 
+import { useEffect, useRef, useState } from "react"
+import { EyeIcon } from "lucide-react"
+
 import {
   applyForce,
   Boid,
@@ -12,27 +15,28 @@ import {
   handleBoidEdgeCollisions,
   updateBoid,
 } from "@/lib/sims/boid"
-
 import {
   createVector,
   createVectorFromAngle,
   setVectorMagnitude,
 } from "@/lib/utils-vector"
-import { useEffect, useRef } from "react"
-import { useAnimatedCanvas } from "@/hooks/useAnimatedCanvas"
 import { randomNumber } from "@/lib/random/random"
+
+import { CanvasSize } from "@/hooks/useResponsiveCanvas"
+import { useAnimatedCanvas } from "@/hooks/useAnimatedCanvas"
+
+import { SimLayout } from "@/components/sim-layout"
+import { Canvas } from "@/components/canvas"
+import { Toggle } from "@/components/ui/toggle"
 
 const BOIDS = 25
 const MAX_SPEED = 0.1
-const SHOW_PERCEPTION = false
 
 const FlockSimPage = () => {
+  const [showPerception, setShowPerception] = useState(false)
   const flock = useRef<Boid[]>([])
 
-  const handleUpdate = (
-    deltaTime: number,
-    size: { width: number; height: number }
-  ) => {
+  const handleUpdate = (deltaTime: number, size: CanvasSize) => {
     const flockCopy = [...flock.current]
     flock.current.forEach((boid) => {
       const alignment = calculateAlignment(boid, flockCopy, 0.001)
@@ -51,23 +55,20 @@ const FlockSimPage = () => {
     })
   }
 
-  const handleDraw = (
-    ctx: CanvasRenderingContext2D,
-    size: { width: number; height: number }
-  ) => {
+  const handleDraw = (ctx: CanvasRenderingContext2D, size: CanvasSize) => {
     ctx.clearRect(0, 0, size.width, size.height)
     flock.current.forEach((boid) => {
-      if (SHOW_PERCEPTION) drawBoidPerception(ctx, boid)
+      if (showPerception) drawBoidPerception(ctx, boid)
       drawBoid(ctx, boid)
     })
   }
 
   const { canvasRef, canvasReady, getSize } = useAnimatedCanvas(
     handleUpdate,
-    handleDraw
+    handleDraw,
   )
 
-  // Perform setup
+  // Seed the flock once the canvas has dimensions to scatter boids across.
   useEffect(() => {
     if (!canvasReady) return
 
@@ -75,31 +76,29 @@ const FlockSimPage = () => {
     for (let i = 0; i < BOIDS; i++) {
       const position = createVector(
         randomNumber(0, size.width),
-        randomNumber(0, size.height)
+        randomNumber(0, size.height),
       )
       const velocity = createVectorFromAngle(randomNumber(0, 360), 25)
-      const boid = createBoid(position, velocity)
-      flock.current.push(boid)
+      flock.current.push(createBoid(position, velocity))
     }
   }, [canvasReady, getSize])
 
-  const handleOnMouseDown = () => {}
+  const controls = (
+    <Toggle
+      pressed={showPerception}
+      onPressedChange={setShowPerception}
+      aria-label="Show perception radius"
+      variant="outline"
+      size="sm"
+    >
+      <EyeIcon />
+    </Toggle>
+  )
 
   return (
-    <div className="h-screen p-4 flex flex-col gap-2">
-      <div className="flex flex-wrap gap-x-4 gap-y-2 justify-between">
-        <h1 className="font-semibold text-2xl whitespace-nowrap">
-          Emily&apos;s Flock Sim
-        </h1>
-      </div>
-      <div className="min-h-0 min-w-0 grow">
-        <canvas
-          ref={canvasRef}
-          className="border border-primary rounded"
-          onMouseDown={handleOnMouseDown}
-        />
-      </div>
-    </div>
+    <SimLayout title="Flock" fullscreen showFPS controls={controls}>
+      <Canvas ref={canvasRef} />
+    </SimLayout>
   )
 }
 
