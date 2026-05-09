@@ -96,9 +96,9 @@ export const FPSCounter = ({
 
   return (
     <div
-      className={`px-3 py-1 rounded font-mono text-sm font-bold ${getFpsColor()}`}
+      className={`px-3 py-1 rounded font-mono text-sm font-bold tabular-nums ${getFpsColor()}`}
     >
-      {fps} FPS
+      <span className="inline-block w-[2ch] text-right">{fps}</span> FPS
       {showDetails && (
         <div style={{ fontSize: "10px", opacity: 0.8 }}>
           Avg: {avgFps} | Min: {minFps} | Max: {maxFps}
