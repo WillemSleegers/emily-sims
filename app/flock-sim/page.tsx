@@ -16,9 +16,9 @@ import {
   updateBoid,
 } from "@/lib/sims/boid"
 import {
+  constrainVector,
   createVector,
   createVectorFromAngle,
-  setVectorMagnitude,
 } from "@/lib/utils-vector"
 import { randomNumber } from "@/lib/random/random"
 
@@ -29,8 +29,21 @@ import { SimLayout } from "@/components/sim-layout"
 import { Canvas } from "@/components/canvas"
 import { Toggle } from "@/components/ui/toggle"
 
-const BOIDS = 25
+const BOIDS = 50
+// Speed in px/ms; ~50-100 px/s with a typical 16ms tick. Min speed prevents
+// boids from ever fully stopping (which would let opposing forces flip them
+// 180° in place because their direction becomes meaningless near zero).
 const MAX_SPEED = 0.1
+const MIN_SPEED = 0.05
+// Force magnitudes are how much each rule can change velocity per tick.
+// Kept small relative to MAX_SPEED (each at most ~5%) so momentum dominates
+// and direction changes are gradual. Separation is strongest so boids
+// reliably avoid collisions; coherence is the gentlest so the flock drifts
+// together rather than snapping inward.
+const ALIGNMENT_FORCE = 0.0025
+const COHERENCE_FORCE = 0.0015
+const SEPARATION_FORCE = 0.005
+const SEPARATION_RADIUS = 30
 
 const FlockSimPage = () => {
   const [showPerception, setShowPerception] = useState(false)
@@ -39,15 +52,22 @@ const FlockSimPage = () => {
   const handleUpdate = (deltaTime: number, size: CanvasSize) => {
     const flockCopy = [...flock.current]
     flock.current.forEach((boid) => {
-      const alignment = calculateAlignment(boid, flockCopy, 0.001)
-      const cohesion = calculateCoherence(boid, flockCopy, 0.0005)
-      const separation = calculateSeparation(boid, flockCopy, 15, 0.002)
+      const alignment = calculateAlignment(boid, flockCopy, ALIGNMENT_FORCE)
+      const cohesion = calculateCoherence(boid, flockCopy, COHERENCE_FORCE)
+      const separation = calculateSeparation(
+        boid,
+        flockCopy,
+        SEPARATION_RADIUS,
+        SEPARATION_FORCE,
+      )
 
       applyForce(boid, separation)
       applyForce(boid, alignment)
       applyForce(boid, cohesion)
 
-      boid.velocity = setVectorMagnitude(boid.velocity, MAX_SPEED)
+      // Constrain speed AFTER all forces have summed. Min speed prevents
+      // dead stops; max speed prevents runaway acceleration.
+      boid.velocity = constrainVector(boid.velocity, MIN_SPEED, MAX_SPEED)
 
       handleBoidEdgeCollisions(boid, size.width, size.height)
 
@@ -78,7 +98,7 @@ const FlockSimPage = () => {
         randomNumber(0, size.width),
         randomNumber(0, size.height),
       )
-      const velocity = createVectorFromAngle(randomNumber(0, 360), 25)
+      const velocity = createVectorFromAngle(randomNumber(0, 360), MAX_SPEED)
       flock.current.push(createBoid(position, velocity))
     }
   }, [canvasReady, getSize])
