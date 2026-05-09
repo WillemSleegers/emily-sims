@@ -1,5 +1,5 @@
-import { useRef, useEffect, useCallback, useState } from "react"
-import { setupCanvasForHighDPI } from "@/lib/utils-canvas"
+import { useRef } from "react"
+import { useResponsiveCanvas } from "@/hooks/useResponsiveCanvas"
 
 export type Cell = {
   x: number
@@ -17,7 +17,6 @@ export type GridInfo = {
 
 type UseResponsiveGridCanvasOptions = {
   // Called after the canvas has been resized and prepared for high-DPI drawing.
-  // Useful for redrawing on resize without managing a separate ResizeObserver.
   onResize?: (ctx: CanvasRenderingContext2D, gridInfo: GridInfo) => void
 }
 
@@ -25,8 +24,8 @@ export const useResponsiveGridCanvas = (
   cellSize: number,
   options: UseResponsiveGridCanvasOptions = {},
 ) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-
+  // GridInfo mirrors canvas size but adds row/col counts. We update it in
+  // computeSize (called during resize) and read it from the helpers below.
   const gridInfo = useRef<GridInfo>({
     cellSize,
     rows: 0,
@@ -35,176 +34,93 @@ export const useResponsiveGridCanvas = (
     canvasHeight: 0,
   })
 
-  const [canvasReady, setCanvasReady] = useState(false)
-
-  // Stash the latest onResize in a ref so consumers don't need to memoize it,
-  // and so the effect below doesn't re-subscribe the observer on every render.
   const onResizeRef = useRef(options.onResize)
   onResizeRef.current = options.onResize
 
-  const calculateGridDimensions = useCallback(
-    (containerWidth: number, containerHeight: number): GridInfo => {
-      // Simply calculate how many cells fit
+  const responsive = useResponsiveCanvas({
+    // Snap canvas dimensions to multiples of cellSize so cells always fit exactly.
+    computeSize: ({ width: containerWidth, height: containerHeight }) => {
       const cols = Math.floor(containerWidth / cellSize)
       const rows = Math.floor(containerHeight / cellSize)
-
-      // Calculate actual canvas dimensions
       const canvasWidth = cols * cellSize
       const canvasHeight = rows * cellSize
 
-      return {
-        cellSize,
-        rows,
-        cols,
-        canvasWidth,
-        canvasHeight,
-      }
+      gridInfo.current = { cellSize, rows, cols, canvasWidth, canvasHeight }
+
+      return { width: canvasWidth, height: canvasHeight }
     },
-    [cellSize]
-  )
+    onResize: (ctx) => onResizeRef.current?.(ctx, gridInfo.current),
+  })
 
-  const handleResize = useCallback(() => {
-    const canvas = canvasRef.current
-    if (!canvas?.parentElement) return
+  const getGridInfo = () => gridInfo.current
 
-    const parent = canvas.parentElement
+  const drawGrid = (
+    ctx: CanvasRenderingContext2D,
+    strokeStyle = "white",
+    lineWidth = 1,
+  ) => {
+    const { canvasWidth, canvasHeight, rows, cols } = gridInfo.current
 
-    const containerWidth = parent.clientWidth
-    const containerHeight = parent.clientHeight
+    ctx.strokeStyle = strokeStyle
+    ctx.lineWidth = lineWidth
 
-    const newGridInfo = calculateGridDimensions(containerWidth, containerHeight)
-
-    // Only resize if dimensions actually changed
-    const current = gridInfo.current
-    if (
-      current.canvasWidth === newGridInfo.canvasWidth &&
-      current.canvasHeight === newGridInfo.canvasHeight &&
-      current.rows === newGridInfo.rows &&
-      current.cols === newGridInfo.cols
-    ) {
-      return
-    }
-
-    gridInfo.current = newGridInfo
-
-    setupCanvasForHighDPI(
-      canvas,
-      newGridInfo.canvasWidth,
-      newGridInfo.canvasHeight,
-    )
-
-    const ready = newGridInfo.canvasWidth > 0 && newGridInfo.canvasHeight > 0
-    setCanvasReady(ready)
-
-    // Run after high-DPI setup so the callback draws onto a freshly sized canvas.
-    if (ready) {
-      const ctx = canvas.getContext("2d")
-      if (ctx) onResizeRef.current?.(ctx, newGridInfo)
-    }
-  }, [calculateGridDimensions])
-
-  // Re-run when cellSize changes
-  useEffect(() => {
-    if (canvasReady) {
-      handleResize()
-    }
-  }, [cellSize, handleResize])
-
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas?.parentElement) return
-
-    const resizeObserver = new ResizeObserver(handleResize)
-    resizeObserver.observe(canvas.parentElement)
-    handleResize()
-
-    return () => {
-      resizeObserver.disconnect()
-    }
-  }, [handleResize])
-
-  const getContext = useCallback(() => {
-    return canvasRef.current?.getContext("2d") || null
-  }, [])
-
-  const getGridInfo = useCallback(() => gridInfo.current, [])
-
-  const drawGrid = useCallback(
-    (ctx: CanvasRenderingContext2D, strokeStyle = "white", lineWidth = 1) => {
-      const { canvasWidth, canvasHeight, rows, cols } = gridInfo.current
-
-      ctx.strokeStyle = strokeStyle
-      ctx.lineWidth = lineWidth
-
-      // Draw vertical lines
-      for (let i = 0; i <= cols; i++) {
-        const x = i * cellSize
-        ctx.beginPath()
-        ctx.moveTo(x, 0)
-        ctx.lineTo(x, canvasHeight)
-        ctx.stroke()
-      }
-
-      // Draw horizontal lines
-      for (let i = 0; i <= rows; i++) {
-        const y = i * cellSize
-        ctx.beginPath()
-        ctx.moveTo(0, y)
-        ctx.lineTo(canvasWidth, y)
-        ctx.stroke()
-      }
-    },
-    [cellSize]
-  )
-
-  const drawCell = useCallback(
-    (
-      ctx: CanvasRenderingContext2D,
-      x: number,
-      y: number,
-      fillStyle = "red"
-    ) => {
+    // Vertical lines at every column boundary
+    for (let i = 0; i <= cols; i++) {
+      const x = i * cellSize
       ctx.beginPath()
-      ctx.fillStyle = fillStyle
-      ctx.rect(x * cellSize, y * cellSize, cellSize, cellSize)
-      ctx.fill()
-    },
-    [cellSize]
-  )
+      ctx.moveTo(x, 0)
+      ctx.lineTo(x, canvasHeight)
+      ctx.stroke()
+    }
 
-  const getCellFromPixel = useCallback(
-    (x: number, y: number) => {
-      const row = Math.floor(y / cellSize)
-      const col = Math.floor(x / cellSize)
-      const { rows, cols } = gridInfo.current
+    // Horizontal lines at every row boundary
+    for (let i = 0; i <= rows; i++) {
+      const y = i * cellSize
+      ctx.beginPath()
+      ctx.moveTo(0, y)
+      ctx.lineTo(canvasWidth, y)
+      ctx.stroke()
+    }
+  }
 
-      return {
-        row: Math.max(0, Math.min(row, rows - 1)),
-        col: Math.max(0, Math.min(col, cols - 1)),
-      }
-    },
-    [cellSize]
-  )
+  const drawCell = (
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    fillStyle = "red",
+  ) => {
+    ctx.beginPath()
+    ctx.fillStyle = fillStyle
+    ctx.rect(x * cellSize, y * cellSize, cellSize, cellSize)
+    ctx.fill()
+  }
 
-  const getPixelFromCell = useCallback(
-    (row: number, col: number) => {
-      return {
-        x: col * cellSize,
-        y: row * cellSize,
-      }
-    },
-    [cellSize]
-  )
+  // Convert a pixel coordinate to a row/col, clamped to the grid bounds.
+  const getCellFromPixel = (x: number, y: number) => {
+    const row = Math.floor(y / cellSize)
+    const col = Math.floor(x / cellSize)
+    const { rows, cols } = gridInfo.current
 
-  const isValidCell = useCallback((row: number, col: number) => {
+    return {
+      row: Math.max(0, Math.min(row, rows - 1)),
+      col: Math.max(0, Math.min(col, cols - 1)),
+    }
+  }
+
+  const getPixelFromCell = (row: number, col: number) => ({
+    x: col * cellSize,
+    y: row * cellSize,
+  })
+
+  const isValidCell = (row: number, col: number) => {
     const { rows, cols } = gridInfo.current
     return row >= 0 && row < rows && col >= 0 && col < cols
-  }, [])
+  }
 
   return {
-    canvasRef,
-    canvasReady,
-    getContext,
+    canvasRef: responsive.canvasRef,
+    canvasReady: responsive.canvasReady,
+    getContext: responsive.getContext,
     getGridInfo,
     getCellFromPixel,
     getPixelFromCell,

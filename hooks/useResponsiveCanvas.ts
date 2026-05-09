@@ -12,6 +12,10 @@ type UseResponsiveCanvasOptions = {
   // Called after the canvas has been resized and prepared for high-DPI drawing.
   // Useful for static canvases that only need to redraw on resize.
   onResize?: (ctx: CanvasRenderingContext2D, size: CanvasSize) => void
+  // Transforms the container's measured size into the canvas size to use.
+  // Defaults to identity (canvas fills the container). Used by specializations
+  // like the grid hook to snap dimensions to a cell-size multiple.
+  computeSize?: (container: CanvasSize) => CanvasSize
 }
 
 export const useResponsiveCanvas = (options: UseResponsiveCanvasOptions = {}) => {
@@ -20,10 +24,12 @@ export const useResponsiveCanvas = (options: UseResponsiveCanvasOptions = {}) =>
 
   const [canvasReady, setCanvasReady] = useState(false)
 
-  // Stash the latest onResize in a ref so consumers don't need to memoize it,
+  // Stash latest options in refs so consumers don't need to memoize them,
   // and so the effect below doesn't re-subscribe the observer on every render.
   const onResizeRef = useRef(options.onResize)
+  const computeSizeRef = useRef(options.computeSize)
   onResizeRef.current = options.onResize
+  computeSizeRef.current = options.computeSize
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -33,17 +39,30 @@ export const useResponsiveCanvas = (options: UseResponsiveCanvasOptions = {}) =>
     if (!parent) return
 
     const handleResize = () => {
-      const width = parent.clientWidth
-      const height = parent.clientHeight
-      canvasSize.current = { width, height }
+      const container = {
+        width: parent.clientWidth,
+        height: parent.clientHeight,
+      }
+      const size = computeSizeRef.current?.(container) ?? container
 
-      setupCanvasForHighDPI(canvas, width, height)
-      setCanvasReady(width > 0 && height > 0)
+      // Skip redundant work if the resolved size hasn't changed (e.g. container
+      // resized by less than a grid cell, so the snapped size is identical).
+      if (
+        size.width === canvasSize.current.width &&
+        size.height === canvasSize.current.height
+      ) {
+        return
+      }
+
+      canvasSize.current = size
+
+      setupCanvasForHighDPI(canvas, size.width, size.height)
+      setCanvasReady(size.width > 0 && size.height > 0)
 
       // Run after high-DPI setup so the callback draws onto a freshly sized canvas.
-      if (width > 0 && height > 0) {
+      if (size.width > 0 && size.height > 0) {
         const ctx = canvas.getContext("2d")
-        if (ctx) onResizeRef.current?.(ctx, canvasSize.current)
+        if (ctx) onResizeRef.current?.(ctx, size)
       }
     }
 
