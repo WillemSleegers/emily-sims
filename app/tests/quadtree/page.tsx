@@ -3,6 +3,7 @@
 import { useEffect, useRef, MouseEvent } from "react"
 
 import { useAnimatedCanvas } from "@/hooks/useAnimatedCanvas"
+import { CanvasSize } from "@/hooks/useResponsiveCanvas"
 
 import {
   Circle,
@@ -28,10 +29,7 @@ const QuadtreePage = () => {
   const quadtree = useRef<QuadtreeNode>(undefined)
 
   // Move the circles around and have them bounce off of the edges
-  const handleUpdate = (
-    deltaTime: number,
-    size: { width: number; height: number },
-  ) => {
+  const handleUpdate = (deltaTime: number, size: CanvasSize) => {
     circles.current.forEach((circle) => {
       updateCirclePosition(circle, deltaTime)
       handleCircleEdgeCollisions(circle, size.width, size.height)
@@ -39,10 +37,7 @@ const QuadtreePage = () => {
   }
 
   // Draw the circles
-  const handleDraw = (
-    ctx: CanvasRenderingContext2D,
-    size: { width: number; height: number },
-  ) => {
+  const handleDraw = (ctx: CanvasRenderingContext2D, size: CanvasSize) => {
     ctx.clearRect(0, 0, size.width, size.height)
     if (!quadtree.current) return
 

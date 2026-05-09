@@ -26,10 +26,7 @@ const TestPage = () => {
   const circles = useRef<Circle[]>([])
 
   // Move the circles around and have them bounce off of the edges
-  const handleUpdate = (
-    deltaTime: number,
-    size: { width: number; height: number },
-  ) => {
+  const handleUpdate = (deltaTime: number, size: CanvasSize) => {
     circles.current.forEach((circle) => {
       updateCirclePosition(circle, deltaTime)
       handleCircleEdgeCollisions(circle, size.width, size.height)

@@ -5,6 +5,9 @@ import { MouseEvent, useRef } from "react"
 import { useAnimatedGridCanvas } from "@/hooks/useAnimatedGridCanvas"
 import { GridInfo } from "@/hooks/useResponsiveGridCanvas"
 
+import { SimLayout } from "@/components/sim-layout"
+import { Canvas } from "@/components/canvas"
+
 const CELL_SIZE = 50
 const FPS = 5
 
@@ -16,7 +19,7 @@ type Cell = {
 const TestGrid = () => {
   const cells = useRef<Cell[]>([])
 
-  const handleUpdate = (deltaTime: number, gridInfo: GridInfo) => {
+  const handleUpdate = (_deltaTime: number, gridInfo: GridInfo) => {
     const { rows } = gridInfo
 
     cells.current.forEach((cell) => {
@@ -44,18 +47,13 @@ const TestGrid = () => {
   }
 
   return (
-    <div className="h-dvh p-4 flex flex-col gap-4 select-none">
-      <h1 className="text-2xl font-bold">Grid Test</h1>
-      <div className="flex-1 flex items-center justify-center min-h-0">
-        <canvas
-          ref={canvasRef}
-          className="border border-primary touch-none"
-          width={0}
-          height={0}
-          onMouseDown={handleOnMouseDown}
-        />
-      </div>
-    </div>
+    <SimLayout title="Grid Test" fullscreen showFPS>
+      <Canvas
+        ref={canvasRef}
+        onMouseDown={handleOnMouseDown}
+        className="select-none"
+      />
+    </SimLayout>
   )
 }
 
