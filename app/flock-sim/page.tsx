@@ -19,7 +19,7 @@ import {
   setVectorMagnitude,
 } from "@/lib/utils-vector"
 import { useEffect, useRef } from "react"
-import { useCanvasAnimation } from "@/hooks/useAnimatedCanvas"
+import { useAnimatedCanvas } from "@/hooks/useAnimatedCanvas"
 import { randomNumber } from "@/lib/random/random"
 
 const BOIDS = 25
@@ -62,7 +62,7 @@ const FlockSimPage = () => {
     })
   }
 
-  const { canvasRef, canvasReady, getSize } = useCanvasAnimation(
+  const { canvasRef, canvasReady, getSize } = useAnimatedCanvas(
     handleUpdate,
     handleDraw
   )

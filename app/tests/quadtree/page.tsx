@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, MouseEvent } from "react"
 
-import { useCanvasAnimation } from "@/hooks/useAnimatedCanvas"
+import { useAnimatedCanvas } from "@/hooks/useAnimatedCanvas"
 
 import {
   Circle,
@@ -50,7 +50,7 @@ const QuadtreePage = () => {
     drawPoints(ctx, quadtree.current)
   }
 
-  const { canvasRef, canvasReady, getSize } = useCanvasAnimation(
+  const { canvasRef, canvasReady, getSize } = useAnimatedCanvas(
     handleUpdate,
     handleDraw,
   )

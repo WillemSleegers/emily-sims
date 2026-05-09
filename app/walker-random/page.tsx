@@ -9,7 +9,7 @@ import {
   move,
 } from "@/lib/sims/walkers/walker-linear"
 
-import { useCanvasAnimation } from "@/hooks/useAnimatedCanvas"
+import { useAnimatedCanvas } from "@/hooks/useAnimatedCanvas"
 import { createVector } from "@/lib/utils-vector"
 import { ModeToggle } from "@/components/mode-toggle"
 import { Button } from "@/components/ui/button"
@@ -85,7 +85,7 @@ const WalkerLinearPage = () => {
     walkers.current.forEach((walker) => drawWalker(ctx, walker))
   }
 
-  const { canvasRef, getSize } = useCanvasAnimation(handleUpdate, handleDraw)
+  const { canvasRef, getSize } = useAnimatedCanvas(handleUpdate, handleDraw)
 
   const handleMouseDown = (event: MouseEvent<HTMLCanvasElement>) => {
     event.preventDefault()

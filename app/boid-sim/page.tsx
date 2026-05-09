@@ -2,7 +2,7 @@
 
 import { useRef, MouseEvent, useEffect } from "react"
 
-import { useCanvasAnimation } from "@/hooks/useAnimatedCanvas"
+import { useAnimatedCanvas } from "@/hooks/useAnimatedCanvas"
 
 import { randomNumber } from "@/lib/random/random"
 import {
@@ -36,7 +36,7 @@ const BoidPage = () => {
     })
   }
 
-  const { canvasRef, getSize, canvasReady } = useCanvasAnimation(
+  const { canvasRef, getSize, canvasReady } = useAnimatedCanvas(
     handleUpdate,
     handleDraw
   )

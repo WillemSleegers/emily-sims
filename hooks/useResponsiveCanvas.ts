@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useEffect, useState } from "react"
-import { setupCanvasForHighDPI } from "@/lib/canvas-utils"
+import { setupCanvasForHighDPI } from "@/lib/utils-canvas"
 
 export type CanvasSize = {
   width: number

@@ -1,7 +1,7 @@
 import { useResponsiveCanvas } from "@/hooks/useResponsiveCanvas"
 import { useAnimationLoop } from "@/hooks/animationLoop"
 
-export const useCanvasAnimation = (
+export const useAnimatedCanvas = (
   onUpdate: (
     deltaTime: number,
     size: { width: number; height: number }

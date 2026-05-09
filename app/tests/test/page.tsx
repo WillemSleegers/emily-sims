@@ -3,7 +3,7 @@
 import { useRef, MouseEvent } from "react"
 
 import { CanvasSize } from "@/hooks/useResponsiveCanvas"
-import { useCanvasAnimation } from "@/hooks/useAnimatedCanvas"
+import { useAnimatedCanvas } from "@/hooks/useAnimatedCanvas"
 
 import { SimLayout } from "@/components/sim-layout"
 import { Canvas } from "@/components/canvas"
@@ -44,7 +44,7 @@ const TestPage = () => {
     })
   }
 
-  const { canvasRef } = useCanvasAnimation(handleUpdate, handleDraw)
+  const { canvasRef } = useAnimatedCanvas(handleUpdate, handleDraw)
 
   // Add a circle to the canvas on the click coordinate
   const handleClick = (event: MouseEvent<HTMLCanvasElement>) => {

@@ -2,7 +2,7 @@
 
 import { useRef, MouseEvent, useState } from "react"
 
-import { useCanvasAnimation } from "@/hooks/useAnimatedCanvas"
+import { useAnimatedCanvas } from "@/hooks/useAnimatedCanvas"
 import { cn } from "@/lib/utils"
 
 import {
@@ -44,7 +44,7 @@ const RainSimPage = () => {
     })
   }
 
-  const { canvasRef, canvasReady } = useCanvasAnimation(
+  const { canvasRef, canvasReady } = useAnimatedCanvas(
     handleUpdate,
     handleDraw
   )
