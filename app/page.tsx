@@ -27,6 +27,9 @@ const Home = () => {
         <li>
           <Link href="/attraction">Attraction</Link>
         </li>
+        <li>
+          <Link href="/forage-sim">Forage Sim</Link>
+        </li>
       </ul>
       <h2>Testing</h2>
       <ul className="space-y-3 sm:space-y-4">
