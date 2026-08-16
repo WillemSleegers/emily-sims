@@ -208,9 +208,9 @@ export const handleBoidEdgeCollisions = (
 /**
  * Updates a boid's velocity and position for one frame
  * @param boid - The boid to update
- * @param deltaTime - Time step for the update (optional, defaults to 1)
- * @param minSpeed - Optional minimum speed to clamp velocity to
- * @param maxSpeed - Optional maximum speed to clamp velocity to
+ * @param deltaTime - Time elapsed since last frame, in milliseconds
+ * @param minSpeed - Optional minimum speed to clamp velocity to, in px/s
+ * @param maxSpeed - Optional maximum speed to clamp velocity to, in px/s
  */
 export const updateBoid = (
   boid: Boid,
@@ -229,8 +229,8 @@ export const updateBoid = (
   // Update angle to match velocity direction
   boid.angle = vectorToAngle(boid.velocity)
 
-  // Update position
-  const scaledVelocity = scaleVector(boid.velocity, deltaTime)
+  // Velocity is in px/s, so convert deltaTime to seconds before moving
+  const scaledVelocity = scaleVector(boid.velocity, deltaTime / 1000)
   boid.position = addVectors(boid.position, scaledVelocity)
 }
 

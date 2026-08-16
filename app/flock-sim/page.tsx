@@ -26,19 +26,19 @@ import { Canvas } from "@/components/canvas"
 import { Toggle } from "@/components/ui/toggle"
 
 const BOIDS = 50
-// Speed in px/ms; ~50-100 px/s with a typical 16ms tick. Min speed prevents
-// boids from ever fully stopping (which would let opposing forces flip them
-// 180° in place because their direction becomes meaningless near zero).
-const MAX_SPEED = 0.1
-const MIN_SPEED = 0.05
+// Speed in px/s. Min speed prevents boids from ever fully stopping (which
+// would let opposing forces flip them 180° in place because their direction
+// becomes meaningless near zero).
+const MAX_SPEED = 100
+const MIN_SPEED = 50
 // Force magnitudes are how much each rule can change velocity per tick.
 // Kept small relative to MAX_SPEED (each at most ~5%) so momentum dominates
 // and direction changes are gradual. Separation is strongest so boids
 // reliably avoid collisions; coherence is the gentlest so the flock drifts
 // together rather than snapping inward.
-const ALIGNMENT_FORCE = 0.0025
-const COHERENCE_FORCE = 0.0015
-const SEPARATION_FORCE = 0.005
+const ALIGNMENT_FORCE = 2.5
+const COHERENCE_FORCE = 1.5
+const SEPARATION_FORCE = 5
 const SEPARATION_RADIUS = 30
 
 const FlockSimPage = () => {

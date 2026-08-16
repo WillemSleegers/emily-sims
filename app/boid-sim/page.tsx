@@ -18,12 +18,14 @@ import {
 } from "@/lib/sims/boid"
 import { createVector, createVectorFromAngle } from "@/lib/utils-vector"
 
+const SPEED = 125 // px/s
+
 const BoidPage = () => {
   const boids = useRef<Boid[]>([])
 
   const handleUpdate = (deltaTime: number, size: CanvasSize) => {
     boids.current.forEach((boid) => {
-      updateBoid(boid, deltaTime * 0.01)
+      updateBoid(boid, deltaTime)
       handleBoidEdgeCollisions(boid, size.width, size.height)
     })
   }
@@ -47,7 +49,7 @@ const BoidPage = () => {
       randomNumber(0, size.width),
       randomNumber(0, size.height),
     )
-    const velocity = createVectorFromAngle(randomNumber(0, 360), 25)
+    const velocity = createVectorFromAngle(randomNumber(0, 360), SPEED)
     boids.current.push(createBoid(position, velocity))
   }, [canvasReady, getSize])
 
@@ -57,7 +59,7 @@ const BoidPage = () => {
       event.nativeEvent.offsetX,
       event.nativeEvent.offsetY,
     )
-    const velocity = createVectorFromAngle(randomNumber(0, 360), 25)
+    const velocity = createVectorFromAngle(randomNumber(0, 360), SPEED)
     boids.current.push(createBoid(position, velocity))
   }
 
