@@ -66,6 +66,9 @@ export const useResponsiveCanvas = (options: UseResponsiveCanvasOptions = {}) =>
       }
     }
 
+    // Watches the parent element's box size directly, not just the window —
+    // catches layout changes a window resize listener would miss, like a
+    // sidebar toggling or a flex container reflowing.
     const resizeObserver = new ResizeObserver(handleResize)
     resizeObserver.observe(parent)
 

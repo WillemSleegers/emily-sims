@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from "react"
 
-import { useAnimationLoop } from "@/hooks/animationLoop"
+import { useAnimationLoop } from "@/hooks/useAnimationLoop"
 import {
   GridInfo,
   useResponsiveGridCanvas,
@@ -32,6 +32,11 @@ export const useAnimatedGridCanvas = (
 
   const targetInterval = 1000 / fps
 
+  // The loop itself still runs at full display refresh rate via
+  // useAnimationLoop, but update/draw only fire once enough time has
+  // accumulated to reach the target interval. This lets tick-based sims
+  // (Game of Life, sand, rain) evolve at a controlled, low rate independent
+  // of the display's refresh rate, rather than every rAF frame.
   useAnimationLoop(
     (deltaTime) => {
       if (!canvasReady) return

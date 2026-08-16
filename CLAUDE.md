@@ -1,34 +1,12 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
-## Development Commands
-
-Start development server with Turbopack:
-
-```bash
-npm run dev
-```
-
-Build for production:
-
-```bash
-npm run build
-```
-
-Run ESLint:
-
-```bash
-npm run lint
-```
-
 ## Project Architecture
 
-This is a Next.js 15 project featuring various simulation and game implementations built for educational purposes. The project follows a modular architecture with clear separation of concerns.
+This is a Next.js project featuring various simulation and game implementations built for educational purposes. The project follows a modular architecture with clear separation of concerns.
 
 ### Core Structure
 
-- **App Router**: Uses Next.js 15 app directory structure with page-based routing
+- **App Router**: Uses Next.js app directory structure with page-based routing
 - **Simulation Framework**: Custom hooks and utilities for canvas-based simulations
 - **Component Library**: Radix UI components with Tailwind CSS styling
 
@@ -64,10 +42,9 @@ Comprehensive 2D vector utilities in `lib/utils-vector.ts`:
 
 ### Styling & UI
 
-- **Tailwind CSS 4**: For styling with prose classes for content areas
+- **Tailwind CSS**: For styling with prose classes for content areas
 - **shadcn/ui**: Component library built on Radix UI primitives (New York style)
 - **Lucide React**: Icon library via shadcn/ui configuration
-- **Custom Components**: Toggle groups, dialogs, and simulation controls in `components/ui/`
 
 ### TypeScript Configuration
 
@@ -129,20 +106,3 @@ Prefer simple, direct solutions over complex abstractions:
 - **Readable over clever**: Choose clear, straightforward code over clever but hard-to-understand solutions
 
 Example: Use `Math.abs(180 - angle)` instead of generic modulo arithmetic when you know angles are constrained to 0-360°.
-
-## Commit Messages
-
-When creating git commits, use clear, down-to-earth language:
-
-- **Be straightforward**: Describe what was added, changed, or fixed in plain language
-- **Avoid fancy words**: Don't use terms like "sophisticated", "elegant", or "robust" - just describe what it does
-- **Focus on functionality**: Explain what the feature does for users, not implementation details
-- **Use simple verbs**: "Add", "Fix", "Update", "Remove" are better than "Implement", "Enhance", "Refactor"
-- **List key changes**: Use bullet points to break down what was changed
-- **Keep it practical**: Focus on what someone using the code would notice or care about
-
-Good: `Add walker tails and color palette selection`
-Bad: `Implement sophisticated trail rendering system with advanced color palette architecture`
-
-Good: `Fix walker collision detection to use walker radius`
-Bad: `Enhance collision detection algorithm with radius-based boundary calculations`

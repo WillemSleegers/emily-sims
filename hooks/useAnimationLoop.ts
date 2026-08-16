@@ -12,11 +12,18 @@ export const useAnimationLoop = (
 ) => {
   const { enabled = true } = options
 
+  // These live in refs, not state, because they change on every animation
+  // frame (~60 times/second) — state would re-render the component that
+  // often instead of just driving the callback.
   const animationId = useRef(0)
   const callbackRef = useRef(callback)
   const previousTimestamp = useRef(0)
 
-  // Update the ref whenever callback changes so we always call the latest version
+  // Callers typically pass a new callback function each render (it closes
+  // over the latest sim state). Stashing it in a ref lets the loop below
+  // always call the current version without listing `callback` as a
+  // dependency — which would otherwise cancel and restart the rAF loop
+  // on every render.
   useEffect(() => {
     callbackRef.current = callback
   }, [callback])

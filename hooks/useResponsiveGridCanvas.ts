@@ -38,7 +38,9 @@ export const useResponsiveGridCanvas = (
   onResizeRef.current = options.onResize
 
   const responsive = useResponsiveCanvas({
-    // Snap canvas dimensions to multiples of cellSize so cells always fit exactly.
+    // Snap canvas dimensions to multiples of cellSize so cells always fit
+    // exactly — otherwise a partial cell at the right/bottom edge would need
+    // special-case handling in draw and hit-testing code.
     computeSize: ({ width: containerWidth, height: containerHeight }) => {
       const cols = Math.floor(containerWidth / cellSize)
       const rows = Math.floor(containerHeight / cellSize)

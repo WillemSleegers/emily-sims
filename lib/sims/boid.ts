@@ -1,5 +1,6 @@
 import {
   addVectors,
+  createVector,
   divideVector,
   constrainVector,
   scaleVector,
@@ -14,6 +15,7 @@ import {
 export type Boid = {
   position: Vector2D
   velocity: Vector2D
+  acceleration: Vector2D
   angle: number
   width: number
   length: number
@@ -34,6 +36,7 @@ export const createBoid = (
 ): Boid => ({
   position: position,
   velocity: velocity,
+  acceleration: createVector(0, 0),
   angle: angle,
   width: width,
   length: length,
@@ -203,11 +206,26 @@ export const handleBoidEdgeCollisions = (
 }
 
 /**
- * Updates a boid's position and angle based on its velocity
+ * Updates a boid's velocity and position for one frame
  * @param boid - The boid to update
  * @param deltaTime - Time step for the update (optional, defaults to 1)
+ * @param minSpeed - Optional minimum speed to clamp velocity to
+ * @param maxSpeed - Optional maximum speed to clamp velocity to
  */
-export const updateBoid = (boid: Boid, deltaTime: number = 1): void => {
+export const updateBoid = (
+  boid: Boid,
+  deltaTime: number = 1,
+  minSpeed?: number,
+  maxSpeed?: number
+): void => {
+  // Fold this frame's accumulated forces into velocity, then clear
+  boid.velocity = addVectors(boid.velocity, boid.acceleration)
+  boid.acceleration = createVector(0, 0)
+
+  if (minSpeed !== undefined && maxSpeed !== undefined) {
+    boid.velocity = constrainVector(boid.velocity, minSpeed, maxSpeed)
+  }
+
   // Update angle to match velocity direction
   boid.angle = vectorToAngle(boid.velocity)
 
@@ -263,18 +281,10 @@ export const drawBoidPerception = (
 }
 
 /**
- * Applies a force to the boid's velocity
+ * Accumulates a force into the boid's acceleration for this frame
  * @param boid - The boid to modify
  * @param force - The force vector to apply
- * @param maxSpeed - Optional maximum speed limit
  */
-export const applyForce = (
-  boid: Boid,
-  force: Vector2D,
-  maxSpeed?: number
-): void => {
-  boid.velocity = addVectors(boid.velocity, force)
-  if (maxSpeed !== undefined) {
-    boid.velocity = constrainVector(boid.velocity, 0, maxSpeed)
-  }
+export const applyForce = (boid: Boid, force: Vector2D): void => {
+  boid.acceleration = addVectors(boid.acceleration, force)
 }

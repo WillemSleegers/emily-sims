@@ -1,5 +1,5 @@
 import { useResponsiveCanvas } from "@/hooks/useResponsiveCanvas"
-import { useAnimationLoop } from "@/hooks/animationLoop"
+import { useAnimationLoop } from "@/hooks/useAnimationLoop"
 
 export const useAnimatedCanvas = (
   onUpdate: (
@@ -13,7 +13,9 @@ export const useAnimatedCanvas = (
 ) => {
   const { canvasRef, canvasReady, getContext, getSize } = useResponsiveCanvas()
 
-  // Run each animation frame: get canvas context and size, then call update and draw callbacks
+  // getContext/getSize are re-read every frame rather than captured once, so
+  // this always draws onto the current canvas even across resizes, without
+  // needing to restart the animation loop.
   const animate = (deltaTime: number) => {
     const ctx = getContext()
     if (!ctx) return

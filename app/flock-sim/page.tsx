@@ -15,11 +15,7 @@ import {
   handleBoidEdgeCollisions,
   updateBoid,
 } from "@/lib/sims/boid"
-import {
-  constrainVector,
-  createVector,
-  createVectorFromAngle,
-} from "@/lib/utils-vector"
+import { createVector, createVectorFromAngle } from "@/lib/utils-vector"
 import { randomNumber } from "@/lib/random/random"
 
 import { CanvasSize } from "@/hooks/useResponsiveCanvas"
@@ -65,13 +61,10 @@ const FlockSimPage = () => {
       applyForce(boid, alignment)
       applyForce(boid, cohesion)
 
-      // Constrain speed AFTER all forces have summed. Min speed prevents
-      // dead stops; max speed prevents runaway acceleration.
-      boid.velocity = constrainVector(boid.velocity, MIN_SPEED, MAX_SPEED)
-
       handleBoidEdgeCollisions(boid, size.width, size.height)
 
-      updateBoid(boid, deltaTime)
+      // Min speed prevents dead stops; max speed prevents runaway acceleration.
+      updateBoid(boid, deltaTime, MIN_SPEED, MAX_SPEED)
     })
   }
 
